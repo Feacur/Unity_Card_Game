@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		// editor
+		"editor.insertSpaces": false,
+	},
+	"extensions": {
+		"recommendations": [
+			// c#, unity
+			"ms-dotnettools.csharp",
+			"Unity.unity-debug",
+			// misc
+			"ms-vscode.hexeditor",
+			"slevesque.shader",
+		]
+	}
+}

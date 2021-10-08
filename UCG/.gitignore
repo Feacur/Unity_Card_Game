@@ -1,0 +1,14 @@
+# IDE
+/.vscode/
+
+# Unity editor
+/Library/
+/Temp/
+/Logs/
+/Logs/
+/UserSettings/
+/obj/
+
+# Unity projects
+/*.sln
+/*.csproj
