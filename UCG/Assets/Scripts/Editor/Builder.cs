@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Build;
+using UnityEditor.AddressableAssets;
 
 public static class Builder
 {
@@ -44,6 +47,16 @@ public static class Builder
 	);
 
 	// ----- ----- ----- ----- -----
+	//     Build assets
+	// ----- ----- ----- ----- -----
+
+	[MenuItem("Build/Assets/Addressables")]
+	public static void Build_Assets_Addressables() => BuildAddressableAssets();
+
+	[MenuItem("Build/Assets/Bundles")]
+	public static void Build_Assets_Bundles() => BuildAssetBundles();
+
+	// ----- ----- ----- ----- -----
 	//     Implementation
 	// ----- ----- ----- ----- -----
 
@@ -80,6 +93,32 @@ public static class Builder
 			case BuildResult.Unknown:   Debug.LogWarning(reportString); break;
 			case BuildResult.Failed:    Debug.LogError(reportString);   break;
 		}
+	}
+
+	private static void BuildAddressableAssets()
+	{
+		AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+		settings.ContentStateBuildPath = EditorConfig.BuildAssetsState;
+		EditorUtility.SetDirty(settings);
+
+		AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult report);
+		BuildResult reportResult = string.IsNullOrEmpty(report.Error) ? BuildResult.Succeeded : BuildResult.Failed;
+
+		//
+		string reportString = $"Build Assets: {reportResult}\n"
+			+ $"- time: {report.Duration:#,0.0} seconds\n"
+			+ $"- err: {report.Error}\n";
+
+		switch (reportResult)
+		{
+			case BuildResult.Succeeded: Debug.Log(reportString);        break;
+			case BuildResult.Failed:    Debug.LogError(reportString);   break;
+		}
+	}
+
+	private static void BuildAssetBundles()
+	{
+		Debug.LogWarning("'BuildAssetBundles()' is not implemented");
 	}
 
 	private static BuildOptions PatchBuildOptions(BuildOptions options, BuildTarget target)

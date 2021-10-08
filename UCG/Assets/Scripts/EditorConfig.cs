@@ -9,6 +9,8 @@ public static partial class EditorConfig
 	public static string BuildFolder       => $"../{Config.Name}_Build";
 	public static string BuildPlayerFolder => $"{BuildFolder}/{GetTargetName(Target)}";
 	public static string BuildPlayerPath   => $"{BuildPlayerFolder}/{GetPackageName(Target)}";
+	public static string BuildAssetsFolder => $"{BuildPlayerFolder}/Assets";
+	public static string BuildAssetsState  => $"{BuildFolder}/ContentState";
 
 	// ----- ----- ----- ----- -----
 	//     Enum convertors
