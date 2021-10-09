@@ -24,7 +24,7 @@
 
 # streaming assets
 **/StreamingAssets/**/*.json text eol=lf working-tree-encoding=UTF-8
+**/StreamingAssets/**/*.xml  text eol=lf working-tree-encoding=UTF-8
 
 # project
 #
-
