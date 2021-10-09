@@ -60,7 +60,7 @@ MonoBehaviour:
       - m_Id: 5a6019e375a751f4183aaad86341c0e7
         m_Value: http://localhost/[BuildTarget]
       - m_Id: 13f5d42e3e753cd44943290f8090cb1c
-        m_Value: '[Config.AssetsPath]'
+        m_Value: '[BuildConfig.AssetsFolder]'
       - m_Id: d366c6d4bd7d4db4eb2c8f2ec1fa08af
         m_Value: '{Config.AssetsPath}'
     m_ProfileEntryNames:

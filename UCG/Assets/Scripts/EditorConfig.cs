@@ -2,15 +2,15 @@
 using UnityEditor;
 using UnityEngine;
 
-public static partial class EditorConfig
+public static partial class BuildConfig
 {
 	public static BuildTarget Target => EditorUserBuildSettings.activeBuildTarget;
 
-	public static string BuildFolder       => $"../{Config.Name}_Build";
-	public static string BuildPlayerFolder => $"{BuildFolder}/{GetTargetName(Target)}";
-	public static string BuildPlayerPath   => $"{BuildPlayerFolder}/{GetPackageName(Target)}";
-	public static string BuildAssetsFolder => $"{BuildPlayerFolder}/Assets";
-	public static string BuildAssetsState  => $"{BuildFolder}/ContentState";
+	public static string Folder       => $"../{Config.ProductName}_Build";
+	public static string PlayerFolder => $"{Folder}/{GetTargetName(Target)}";
+	public static string PlayerPath   => $"{PlayerFolder}/{GetPackageName(Target)}";
+	public static string AssetsFolder => $"{PlayerFolder}/{GetAssetsSubpath(Target)}";
+	public static string AssetsState  => $"{Folder}/ContentState";
 
 	// ----- ----- ----- ----- -----
 	//     Enum convertors
@@ -35,14 +35,29 @@ public static partial class EditorConfig
 	{
 		switch (value)
 		{
-			case BuildTarget.StandaloneWindows64: return Config.Name + ".exe";
-			case BuildTarget.StandaloneLinux64:   return Config.Name;
-			case BuildTarget.StandaloneOSX:       return Config.Name + ".app";
-			case BuildTarget.WebGL:               return Config.Name;
-			case BuildTarget.Android:             return Config.Name + ".apk";
-			case BuildTarget.iOS:                 return Config.Name;
+			case BuildTarget.StandaloneWindows64: return Config.ProductName + ".exe";
+			case BuildTarget.StandaloneLinux64:   return Config.ProductName;
+			case BuildTarget.StandaloneOSX:       return Config.ProductName + ".app";
+			case BuildTarget.WebGL:               return Config.ProductName;
+			case BuildTarget.Android:             return Config.ProductName + ".apk";
+			case BuildTarget.iOS:                 return Config.ProductName;
 		}
 		Debug.LogWarning("unknown package name");
+		return "unknown";
+	}
+
+	private static string GetAssetsSubpath(BuildTarget value)
+	{
+		switch (value)
+		{
+			case BuildTarget.StandaloneWindows64: return "Assets";
+			case BuildTarget.StandaloneLinux64:   return "Assets";
+			case BuildTarget.StandaloneOSX:       return "Assets";
+			case BuildTarget.WebGL:               return $"{Config.ProductName}/Assets";
+			case BuildTarget.Android:             return "Assets";
+			case BuildTarget.iOS:                 return "Assets";
+		}
+		Debug.LogWarning("unknown assets subpath");
 		return "unknown";
 	}
 }

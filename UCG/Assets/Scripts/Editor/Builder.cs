@@ -62,7 +62,7 @@ public static class Builder
 
 	private static void BuildPlayer(BuildOptions options)
 	{
-		BuildTarget             target                  = EditorConfig.Target;
+		BuildTarget             target                  = BuildConfig.Target;
 		BuildTargetGroup        targetGroup             = GetBuildTargetGroup(target);
 		ScriptingImplementation scriptingImplementation = PlayerSettings.GetScriptingBackend(targetGroup);
 		ApiCompatibilityLevel   apiCompatibilityLevel   = PlayerSettings.GetApiCompatibilityLevel(targetGroup);
@@ -72,7 +72,7 @@ public static class Builder
 		BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
 			target = target,
 			targetGroup = targetGroup,
-			locationPathName = EditorConfig.BuildPlayerPath,
+			locationPathName = BuildConfig.PlayerPath,
 			scenes = new[] { Config.MainScene },
 			options = options,
 		});
@@ -98,7 +98,7 @@ public static class Builder
 	private static void BuildAddressableAssets()
 	{
 		AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
-		settings.ContentStateBuildPath = EditorConfig.BuildAssetsState;
+		settings.ContentStateBuildPath = BuildConfig.AssetsState;
 		EditorUtility.SetDirty(settings);
 
 		AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult report);
@@ -188,12 +188,12 @@ public static class Builder
 	{
 		switch (value)
 		{
-			case BuildTarget.StandaloneWindows64: return Config.Name + ".exe";
-			case BuildTarget.StandaloneLinux64:   return Config.Name;
-			case BuildTarget.StandaloneOSX:       return Config.Name + ".app";
-			case BuildTarget.WebGL:               return Config.Name;
-			case BuildTarget.Android:             return Config.Name + ".apk";
-			case BuildTarget.iOS:                 return Config.Name;
+			case BuildTarget.StandaloneWindows64: return Config.ProductName + ".exe";
+			case BuildTarget.StandaloneLinux64:   return Config.ProductName;
+			case BuildTarget.StandaloneOSX:       return Config.ProductName + ".app";
+			case BuildTarget.WebGL:               return Config.ProductName;
+			case BuildTarget.Android:             return Config.ProductName + ".apk";
+			case BuildTarget.iOS:                 return Config.ProductName;
 		}
 		Debug.LogWarning("unknown package name");
 		return "unknown";
