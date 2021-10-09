@@ -73,7 +73,7 @@ public static class Builder
 			target = target,
 			targetGroup = targetGroup,
 			locationPathName = BuildConfig.PlayerPath,
-			scenes = new[] { Config.MainScene },
+			scenes = new[] { RuntimeConfig.MainScene },
 			options = options,
 		});
 
@@ -188,12 +188,12 @@ public static class Builder
 	{
 		switch (value)
 		{
-			case BuildTarget.StandaloneWindows64: return Config.ProductName + ".exe";
-			case BuildTarget.StandaloneLinux64:   return Config.ProductName;
-			case BuildTarget.StandaloneOSX:       return Config.ProductName + ".app";
-			case BuildTarget.WebGL:               return Config.ProductName;
-			case BuildTarget.Android:             return Config.ProductName + ".apk";
-			case BuildTarget.iOS:                 return Config.ProductName;
+			case BuildTarget.StandaloneWindows64: return RuntimeConfig.ProductName + ".exe";
+			case BuildTarget.StandaloneLinux64:   return RuntimeConfig.ProductName;
+			case BuildTarget.StandaloneOSX:       return RuntimeConfig.ProductName + ".app";
+			case BuildTarget.WebGL:               return RuntimeConfig.ProductName;
+			case BuildTarget.Android:             return RuntimeConfig.ProductName + ".apk";
+			case BuildTarget.iOS:                 return RuntimeConfig.ProductName;
 		}
 		Debug.LogWarning("unknown package name");
 		return "unknown";

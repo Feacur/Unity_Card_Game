@@ -6,12 +6,12 @@ rem [any]
 set project=%1
 if [%project%] == [] ( set "project=UCG" )
 
-rem [Current|Windows64]
-set target=%1
+rem [Current|Windows|WebGL]
+set target=%2
 if [%target%] == [] ( set "target=Current" )
 
-rem Optimized|Development|Debug
-set configuration=%2
+rem [Optimized|Development|Debug]
+set configuration=%3
 if [%configuration%] == [] ( set "configuration=Optimized" )
 
 rem |> PREPARE PROJECT
@@ -28,8 +28,10 @@ set build_options=%build_options% -projectPath "%project%"
 set build_options=%build_options% -executeMethod Builder.Build_Player_%configuration%
 set build_options=%build_options% -logFile "%build_folder%/%target%_%configuration%.log"
 
-if %target% == Windows64 (
+if %target% == Windows (
 	set build_options=%build_options% -buildTarget Win64
+) else if %target% == WebGL (
+	set build_options=%build_options% -buildTarget WebGL
 )
 
 rem |> BUILD

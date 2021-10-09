@@ -2,11 +2,11 @@
 using UnityEditor;
 using UnityEngine;
 
-public static partial class BuildConfig
+public static class BuildConfig
 {
 	public static BuildTarget Target => EditorUserBuildSettings.activeBuildTarget;
 
-	public static string Folder       => $"../{Config.ProductName}_Build";
+	public static string Folder       => $"../{RuntimeConfig.ProductName}_Build";
 	public static string PlayerFolder => $"{Folder}/{GetTargetName(Target)}";
 	public static string PlayerPath   => $"{PlayerFolder}/{GetPackageName(Target)}";
 	public static string AssetsFolder => $"{PlayerFolder}/{GetAssetsSubpath(Target)}";
@@ -35,12 +35,12 @@ public static partial class BuildConfig
 	{
 		switch (value)
 		{
-			case BuildTarget.StandaloneWindows64: return Config.ProductName + ".exe";
-			case BuildTarget.StandaloneLinux64:   return Config.ProductName;
-			case BuildTarget.StandaloneOSX:       return Config.ProductName + ".app";
-			case BuildTarget.WebGL:               return Config.ProductName;
-			case BuildTarget.Android:             return Config.ProductName + ".apk";
-			case BuildTarget.iOS:                 return Config.ProductName;
+			case BuildTarget.StandaloneWindows64: return RuntimeConfig.ProductName + ".exe";
+			case BuildTarget.StandaloneLinux64:   return RuntimeConfig.ProductName;
+			case BuildTarget.StandaloneOSX:       return RuntimeConfig.ProductName + ".app";
+			case BuildTarget.WebGL:               return RuntimeConfig.ProductName;
+			case BuildTarget.Android:             return RuntimeConfig.ProductName + ".apk";
+			case BuildTarget.iOS:                 return RuntimeConfig.ProductName;
 		}
 		Debug.LogWarning("unknown package name");
 		return "unknown";
@@ -50,12 +50,12 @@ public static partial class BuildConfig
 	{
 		switch (value)
 		{
-			case BuildTarget.StandaloneWindows64: return "Assets";
-			case BuildTarget.StandaloneLinux64:   return "Assets";
-			case BuildTarget.StandaloneOSX:       return "Assets";
-			case BuildTarget.WebGL:               return $"{Config.ProductName}/Assets";
-			case BuildTarget.Android:             return "Assets";
-			case BuildTarget.iOS:                 return "Assets";
+			case BuildTarget.StandaloneWindows64: return RuntimeConfig.AssetsSubpath;
+			case BuildTarget.StandaloneLinux64:   return RuntimeConfig.AssetsSubpath;
+			case BuildTarget.StandaloneOSX:       return RuntimeConfig.AssetsSubpath;
+			case BuildTarget.WebGL:               return $"{RuntimeConfig.ProductName}/{RuntimeConfig.AssetsSubpath}";
+			case BuildTarget.Android:             return RuntimeConfig.AssetsSubpath;
+			case BuildTarget.iOS:                 return RuntimeConfig.AssetsSubpath;
 		}
 		Debug.LogWarning("unknown assets subpath");
 		return "unknown";

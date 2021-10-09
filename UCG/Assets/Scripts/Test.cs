@@ -12,7 +12,7 @@ public class Test : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Backspace))
 		{
-			SceneManager.LoadScene(Config.MainScene);
+			SceneManager.LoadScene(RuntimeConfig.MainScene);
 		}
 	}
 }

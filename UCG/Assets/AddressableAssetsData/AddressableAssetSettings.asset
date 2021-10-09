@@ -62,7 +62,7 @@ MonoBehaviour:
       - m_Id: 13f5d42e3e753cd44943290f8090cb1c
         m_Value: '[BuildConfig.AssetsFolder]'
       - m_Id: d366c6d4bd7d4db4eb2c8f2ec1fa08af
-        m_Value: '{Config.AssetsPath}'
+        m_Value: '{RuntimeConfig.AssetsPath}'
     m_ProfileEntryNames:
     - m_Id: 90b4a24e2f7c854419f30160d0730956
       m_Name: BuildTarget
