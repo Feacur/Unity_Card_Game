@@ -11,6 +11,8 @@ public static partial class Config
 		{
 #if UNITY_EDITOR
 			return BuildConfig.AssetsFolder;
+#elif UNITY_WEBGL
+			return "http://127.0.0.1:8000/Assets";
 #else
 			return "Assets";
 #endif
