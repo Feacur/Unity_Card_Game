@@ -69,6 +69,7 @@ public static class Builder
 		ApiCompatibilityLevel   apiCompatibilityLevel   = PlayerSettings.GetApiCompatibilityLevel(targetGroup);
 
 		options = PatchBuildOptions(options, target);
+		Il2CppCompilerConfiguration BuildConfig_OptimizationLevel = GetOptimizationLevel(options);
 
 		var playerSettings = (
 			BackendName: PlayerSettings.GetScriptingBackend(targetGroup),
@@ -79,10 +80,21 @@ public static class Builder
 			DecompressionFallback: PlayerSettings.WebGL.decompressionFallback
 		);
 
+		{
+			string overrides = "player settings overrides:\n";
+			if (playerSettings.BackendName           != BuildConfig.BackendName)           { overrides += $"- backend name:           {playerSettings.BackendName} -> {BuildConfig.BackendName}\n"; }
+			if (playerSettings.BackendVersion        != BuildConfig.BackendVersion)        { overrides += $"- backend version:        {playerSettings.BackendVersion} -> {BuildConfig.BackendVersion}\n"; }
+			if (playerSettings.StrippingLevel        != BuildConfig.StrippingLevel)        { overrides += $"- stripping level:        {playerSettings.StrippingLevel} -> {BuildConfig.StrippingLevel}\n"; }
+			if (playerSettings.OptimizationLevel     != BuildConfig_OptimizationLevel)     { overrides += $"- optimization level:     {playerSettings.OptimizationLevel} -> {BuildConfig_OptimizationLevel}\n"; }
+			if (playerSettings.CompressionFormat     != BuildConfig.CompressionFormat)     { overrides += $"- compression format:     {playerSettings.CompressionFormat} -> {BuildConfig.CompressionFormat}\n"; }
+			if (playerSettings.DecompressionFallback != BuildConfig.DecompressionFallback) { overrides += $"- decompression fallback: {playerSettings.DecompressionFallback} -> {BuildConfig.DecompressionFallback}\n"; }
+			Debug.Log(overrides);
+		}
+
 		PlayerSettings.SetScriptingBackend(targetGroup, BuildConfig.BackendName);
 		PlayerSettings.SetApiCompatibilityLevel(targetGroup, BuildConfig.BackendVersion);
 		PlayerSettings.SetManagedStrippingLevel(targetGroup, BuildConfig.StrippingLevel);
-		PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, GetOptimizationLevel(options));
+		PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, BuildConfig_OptimizationLevel);
 		PlayerSettings.WebGL.compressionFormat = BuildConfig.CompressionFormat;
 		PlayerSettings.WebGL.decompressionFallback = BuildConfig.DecompressionFallback;
 

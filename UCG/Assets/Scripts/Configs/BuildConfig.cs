@@ -6,7 +6,7 @@ public static class BuildConfig
 {
 	public static BuildTarget Target => EditorUserBuildSettings.activeBuildTarget;
 
-	public static ScriptingImplementation BackendName       => ScriptingImplementation.Mono2x;
+	public static ScriptingImplementation BackendName       => GetBackendName(Target);
 	public static ApiCompatibilityLevel   BackendVersion    => ApiCompatibilityLevel.NET_4_6;
 	public static ManagedStrippingLevel   StrippingLevel    => ManagedStrippingLevel.High;
 	public static WebGLCompressionFormat  CompressionFormat => WebGLCompressionFormat.Gzip;
@@ -21,6 +21,21 @@ public static class BuildConfig
 	// ----- ----- ----- ----- -----
 	//     Enum convertors
 	// ----- ----- ----- ----- -----
+
+	private static ScriptingImplementation GetBackendName(BuildTarget value)
+	{
+		switch (Target)
+		{
+			case BuildTarget.StandaloneWindows64: return ScriptingImplementation.Mono2x;
+			case BuildTarget.StandaloneLinux64:   return ScriptingImplementation.Mono2x;
+			case BuildTarget.StandaloneOSX:       return ScriptingImplementation.Mono2x;
+			case BuildTarget.WebGL:               return ScriptingImplementation.IL2CPP;
+			case BuildTarget.Android:             return ScriptingImplementation.IL2CPP;
+			case BuildTarget.iOS:                 return ScriptingImplementation.IL2CPP;
+		}
+		Debug.LogWarning("unknown target name");
+		return ScriptingImplementation.Mono2x;
+	}
 
 	private static string GetTargetName(BuildTarget value)
 	{
