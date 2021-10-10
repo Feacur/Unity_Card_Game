@@ -6,7 +6,13 @@ public static class BuildConfig
 {
 	public static BuildTarget Target => EditorUserBuildSettings.activeBuildTarget;
 
-	public static string Folder       => $"../{RuntimeConfig.ProductName}_Build";
+	public static ScriptingImplementation BackendName       => ScriptingImplementation.Mono2x;
+	public static ApiCompatibilityLevel   BackendVersion    => ApiCompatibilityLevel.NET_4_6;
+	public static ManagedStrippingLevel   StrippingLevel    => ManagedStrippingLevel.High;
+	public static WebGLCompressionFormat  CompressionFormat => WebGLCompressionFormat.Gzip;
+	public static bool                    DecompressionFallback => (CompressionFormat != WebGLCompressionFormat.Disabled);
+
+	public static string Folder       => $"../Build";
 	public static string PlayerFolder => $"{Folder}/{GetTargetName(Target)}";
 	public static string PlayerPath   => $"{PlayerFolder}/{GetPackageName(Target)}";
 	public static string AssetsFolder => $"{PlayerFolder}/{GetAssetsSubpath(Target)}";

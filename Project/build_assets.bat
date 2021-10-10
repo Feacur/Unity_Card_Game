@@ -10,13 +10,13 @@ rem [Current|Windows|WebGL]
 set target=%2
 if [%target%] == [] ( set "target=Current" )
 
-rem [Optimized|Development|Debug]
+rem [Addressables|Bundles]
 set configuration=%3
-if [%configuration%] == [] ( set "configuration=Optimized" )
+if [%configuration%] == [] ( set "configuration=Addressables" )
 
 rem |> PREPARE PROJECT
 set project_folder=%cd%
-set build_folder=%project%_Build
+set build_folder=Build
 
 rem |> PREPARE TOOLS
 call "environment.bat" || ( goto :eof )
@@ -25,7 +25,7 @@ call taskkill -fi "IMAGENAME eq Unity.exe" > nul
 rem |> OPTIONS
 set build_options=-batchmode -quit
 set build_options=%build_options% -projectPath "%project%"
-set build_options=%build_options% -executeMethod Builder.Build_Player_%configuration%
+set build_options=%build_options% -executeMethod Builder.Build_Assets_%configuration%
 set build_options=%build_options% -logFile "%build_folder%/%target%_%configuration%.log"
 
 if %target% == Windows (

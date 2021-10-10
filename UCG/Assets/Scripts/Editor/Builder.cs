@@ -14,6 +14,7 @@ public static class Builder
 		void BuildPlayerHandler(BuildPlayerOptions options)
 		{
 			Debug.LogWarning("use [Build/Player/%Configuration%] instead");
+			BuildPipeline.BuildPlayer(options);
 		}
 	}
 
@@ -69,6 +70,22 @@ public static class Builder
 
 		options = PatchBuildOptions(options, target);
 
+		var playerSettings = (
+			BackendName: PlayerSettings.GetScriptingBackend(targetGroup),
+			BackendVersion: PlayerSettings.GetApiCompatibilityLevel(targetGroup),
+			StrippingLevel: PlayerSettings.GetManagedStrippingLevel(targetGroup),
+			OptimizationLevel: PlayerSettings.GetIl2CppCompilerConfiguration(targetGroup),
+			CompressionFormat: PlayerSettings.WebGL.compressionFormat,
+			DecompressionFallback: PlayerSettings.WebGL.decompressionFallback
+		);
+
+		PlayerSettings.SetScriptingBackend(targetGroup, BuildConfig.BackendName);
+		PlayerSettings.SetApiCompatibilityLevel(targetGroup, BuildConfig.BackendVersion);
+		PlayerSettings.SetManagedStrippingLevel(targetGroup, BuildConfig.StrippingLevel);
+		PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, GetOptimizationLevel(options));
+		PlayerSettings.WebGL.compressionFormat = BuildConfig.CompressionFormat;
+		PlayerSettings.WebGL.decompressionFallback = BuildConfig.DecompressionFallback;
+
 		BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
 			target = target,
 			targetGroup = targetGroup,
@@ -76,6 +93,13 @@ public static class Builder
 			scenes = new[] { RuntimeConfig.MainScene },
 			options = options,
 		});
+
+		PlayerSettings.SetScriptingBackend(targetGroup, playerSettings.BackendName);
+		PlayerSettings.SetApiCompatibilityLevel(targetGroup, playerSettings.BackendVersion);
+		PlayerSettings.SetManagedStrippingLevel(targetGroup, playerSettings.StrippingLevel);
+		PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, playerSettings.OptimizationLevel);
+		PlayerSettings.WebGL.compressionFormat = playerSettings.CompressionFormat;
+		PlayerSettings.WebGL.decompressionFallback = playerSettings.DecompressionFallback;
 
 		//
 		double totalSeconds   = report.summary.totalTime.TotalSeconds;
@@ -210,5 +234,18 @@ public static class Builder
 			return "Development";
 		}
 		return "Optimized";
+	}
+
+	private static Il2CppCompilerConfiguration GetOptimizationLevel(BuildOptions value)
+	{
+		if ((value & BuildOptions.Development) == BuildOptions.Development)
+		{
+			if ((value & BuildOptions.AllowDebugging) == BuildOptions.AllowDebugging)
+			{
+				return Il2CppCompilerConfiguration.Debug;
+			}
+			return Il2CppCompilerConfiguration.Release;
+		}
+		return Il2CppCompilerConfiguration.Master;
 	}
 }

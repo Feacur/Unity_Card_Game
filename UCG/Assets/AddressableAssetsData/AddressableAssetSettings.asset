@@ -33,7 +33,7 @@ MonoBehaviour:
     m_Id: 086bad97be4a35842891ccedd346f475
   m_RemoteCatalogLoadPath:
     m_Id: 5a6019e375a751f4183aaad86341c0e7
-  m_ContentStateBuildPath: ../UCG_Build/ContentState
+  m_ContentStateBuildPath: ../Build/ContentState
   m_overridePlayerVersion: 
   m_GroupAssets:
   - {fileID: 11400000, guid: 378e713634502994abc28039bd68e980, type: 2}
