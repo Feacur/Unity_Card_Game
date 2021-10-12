@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.EventSystems;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
@@ -32,8 +35,12 @@ public class Main : MonoBehaviour
 
 	private async static void TestAddressables()
 	{
-		AsyncOperationHandle<GameObject> asyncOpHandle = Addressables.LoadAssetAsync<GameObject>("Prefab");
-		GameObject prefab = await asyncOpHandle.Task;
+		AsyncOperationHandle<SceneInstance> sceneAsyncHandle = Addressables.LoadSceneAsync("Scene_1", LoadSceneMode.Additive);
+		SceneInstance sceneInstance = await sceneAsyncHandle.Task;
+		SceneManager.SetActiveScene(sceneInstance.Scene);
+
+		AsyncOperationHandle<GameObject> prefavSyncHandle = Addressables.LoadAssetAsync<GameObject>("Prefab");
+		GameObject prefab = await prefavSyncHandle.Task;
 		GameObject.Instantiate(prefab);
 	}
 }
