@@ -1,12 +1,18 @@
+using System.Globalization;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.EventSystems;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
+	static Main()
+	{
+		Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+	}
+
 	void Awake()
 	{
 		Debug.Log(@$"unity application:
