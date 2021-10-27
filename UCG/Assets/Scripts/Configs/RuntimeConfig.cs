@@ -3,10 +3,10 @@ using UnityEngine;
 
 public static class RuntimeConfig
 {
-	public static string ProductName         => Application.productName;
-	public static string MainScene           => "Assets/Scenes/Main.unity";
-	public static string AssetsSubpath       => "Assets";
-	public static string StreamingConfigName => "Config.json";
+	public static string ProductName   => Application.productName;
+	public static string MainScene     => "Assets/Scenes/Main.unity";
+	public static string AssetsSubpath => "Assets";
+	public static string ConfigSubpath => "Config.json";
 
 	public static StreamingConfig streamingConfig;
 
@@ -26,8 +26,7 @@ public static class RuntimeConfig
 
 	public static async Task InitStreamingConfig()
 	{
-		string configPath = $"{Application.streamingAssetsPath}/{StreamingConfigName}";
-		string streamingConfigText = await StreamingAssets.ReadText(configPath);
+		string streamingConfigText = await StreamingAssets.ReadText(ConfigSubpath);
 		if (string.IsNullOrEmpty(streamingConfigText))
 		{
 			Debug.LogWarning("empty streaming config text, using defaults");
@@ -45,11 +44,11 @@ public static class RuntimeConfig
 	public static void Log()
 	{
 		Debug.Log(@$"runtime config:
-- product name:          {ProductName}
-- main scene:            {MainScene}
-- assets subpath:        {AssetsSubpath}
-- streaming config name: {StreamingConfigName}
-- assets path:           {AssetsPath}
+- product name:   {ProductName}
+- main scene:     {MainScene}
+- assets subpath: {AssetsSubpath}
+- config subpath: {ConfigSubpath}
+- assets path:    {AssetsPath}
 "
 		);
 	}
