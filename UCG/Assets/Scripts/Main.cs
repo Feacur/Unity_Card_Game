@@ -45,8 +45,8 @@ public class Main : MonoBehaviour
 		SceneInstance sceneInstance = await sceneAsyncHandle.Task;
 		SceneManager.SetActiveScene(sceneInstance.Scene);
 
-		AsyncOperationHandle<GameObject> prefavSyncHandle = Addressables.LoadAssetAsync<GameObject>("Prefab");
-		GameObject prefab = await prefavSyncHandle.Task;
+		AsyncOperationHandle<GameObject> prefabSyncHandle = Addressables.LoadAssetAsync<GameObject>("Prefab");
+		GameObject prefab = await prefabSyncHandle.Task;
 		GameObject.Instantiate(prefab);
 	}
 }
