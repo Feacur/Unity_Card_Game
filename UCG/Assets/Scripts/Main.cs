@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
+	public string NextScene = "Battle";
+
 	static Main()
 	{
 		Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -30,23 +32,37 @@ public class Main : MonoBehaviour
 - streaming assets path: {Application.streamingAssetsPath}
 "
 		);
+
+		if (gameObject.scene.path != RuntimeConfig.MainScene)
+		{
+			Debug.LogError($"this script is meant for '{RuntimeConfig.MainScene}'");
+#if UNITY_EDITOR
+			UnityEditor.EditorApplication.ExitPlaymode();
+#else
+			Application.Quit();
+#endif
+		}
 	}
 
 	async void Start()
 	{
 		await RuntimeConfig.InitStreamingConfig();
 		RuntimeConfig.Log();
-		TestAddressables();
+		LoadSceneAsync(NextScene);
 	}
 
-	private async static void TestAddressables()
+	void Update()
 	{
-		AsyncOperationHandle<SceneInstance> sceneAsyncHandle = Addressables.LoadSceneAsync("Scene_1", LoadSceneMode.Additive);
+		if (Input.GetKeyDown(KeyCode.Backspace))
+		{
+			SceneManager.LoadScene(RuntimeConfig.MainScene);
+		}
+	}
+
+	private async static void LoadSceneAsync(string name)
+	{
+		AsyncOperationHandle<SceneInstance> sceneAsyncHandle = Addressables.LoadSceneAsync(name, LoadSceneMode.Additive);
 		SceneInstance sceneInstance = await sceneAsyncHandle.Task;
 		SceneManager.SetActiveScene(sceneInstance.Scene);
-
-		AsyncOperationHandle<GameObject> prefabSyncHandle = Addressables.LoadAssetAsync<GameObject>("Prefab");
-		GameObject prefab = await prefabSyncHandle.Task;
-		GameObject.Instantiate(prefab);
 	}
 }

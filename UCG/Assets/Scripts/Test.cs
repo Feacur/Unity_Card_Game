@@ -7,12 +7,4 @@ public class Test : MonoBehaviour
 	{
 		Debug.Log("Test says hi!");
 	}
-
-	void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.Backspace))
-		{
-			SceneManager.LoadScene(RuntimeConfig.MainScene);
-		}
-	}
 }
