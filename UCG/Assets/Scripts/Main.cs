@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
-	public string NextScene = "Battle";
+	public string NextScene = "Scenes/Battle.unity";
 
 	static Main()
 	{

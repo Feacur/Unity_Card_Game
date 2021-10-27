@@ -17,12 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 27548c846f5b9fa4091114e580c1aaa3
   m_SerializeEntries:
-  - m_GUID: cd4d5d068dc172f40aa9d9a794fc6138
-    m_Address: Board
+  - m_GUID: 756a687e24fa61c4f94c759638f9a5f9
+    m_Address: Scenes
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 9b54fa69be6f057449e01511cedf9065
-    m_Address: Battle
+  - m_GUID: d4526a59f70368f4ea69c9270b7d2282
+    m_Address: Prefabs
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

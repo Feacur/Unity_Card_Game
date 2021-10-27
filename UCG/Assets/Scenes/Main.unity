@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe213a67202c3c34fb05a36eedaa7ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NextScene: Scenes/Battle.unity
 --- !u!4 &232847513
 Transform:
   m_ObjectHideFlags: 0
