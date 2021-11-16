@@ -69,3 +69,11 @@ public class GameInput : MonoBehaviour
 		GUI.Label(new Rect(10, 150, 200, 30), $"> its index ....... {(state.selectedCard ? state.selectedCard.transform.GetSiblingIndex().ToString() : "-")}");
 	}
 }
+
+/*
+- hand cards [temporary] dissapear upon drag
+- hero power, target: arrow from hero power
+- spell cards, no targets: drag
+- spell cards, target: arrow from hero card
+- minion cards: push other minions
+*/

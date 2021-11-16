@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 4449288744181232146}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4, y: 1.8, z: 1}
+  m_LocalScale: {x: 1.6, y: 2.2, z: 1}
   m_Children: []
   m_Father: {fileID: 4449288745853104605}
   m_RootOrder: 0
@@ -108,7 +108,7 @@ Transform:
   m_GameObject: {fileID: 4449288745007899022}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.001, z: 0}
-  m_LocalScale: {x: 1.3, y: 1.7, z: 1}
+  m_LocalScale: {x: 1.4, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 4449288745853104605}
   m_RootOrder: 1
@@ -172,9 +172,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4449288745853104605}
   - component: {fileID: 2763774669381096569}
+  - component: {fileID: 1917796299787667722}
   - component: {fileID: 5345978689231264631}
   m_Layer: 0
-  m_Name: Card
+  m_Name: BoardCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -188,7 +189,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4449288745853104606}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.25, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4449288744181232145}
@@ -208,6 +209,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24711f63b59b8d04283dd015c7c6e8bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1917796299787667722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4449288745853104606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9b4fa833440e2545a07e378600741fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dimensions: {fileID: 5345978689231264631}
 --- !u!65 &5345978689231264631
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -219,5 +233,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.4, y: 0.01, z: 1.8}
+  m_Size: {x: 1.6, y: 0.01, z: 2.2}
   m_Center: {x: 0, y: 0, z: 0}

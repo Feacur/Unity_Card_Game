@@ -350,6 +350,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 851549508959901436, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275535559052757278, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3662545367381567728, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: targetCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3662545367381567728, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: targetCardsCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4448145841077915698, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 6041947992403909290, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -398,6 +418,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hand 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6495054219092218526, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606577010178268971, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6628185116957498746, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 7102168366193024649, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7344663268147939203, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8000399522672702938, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8836428821173562110, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
 --- !u!1001 &6041947991114057337
@@ -407,6 +455,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 851549508959901436, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275535559052757278, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3662545367381567728, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: targetCount
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4448145841077915698, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 6041947992403909290, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -455,6 +519,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hand 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6495054219092218526, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606577010178268971, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6628185116957498746, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 7102168366193024649, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7344663268147939203, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8000399522672702938, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8836428821173562110, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
 --- !u!1001 &7358831243080814450
@@ -464,6 +556,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6217106019919027113, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
+      propertyPath: targetCount
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7358831241729350878, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
       propertyPath: m_Name
       value: Board
@@ -487,6 +583,10 @@ PrefabInstance:
     - target: {fileID: 7358831242290185689, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8841417350800153727, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
+      propertyPath: targetCount
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
