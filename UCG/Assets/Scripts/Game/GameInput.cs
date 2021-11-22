@@ -70,7 +70,7 @@ public class GameInput : MonoBehaviour
 						{
 							cardFitter.SetCount(cardFitter.GetCount() - 1);
 						}
-						dropArea.OnDrop();
+						dropArea.OnDrop(state.selectedCard, Vector3.zero);
 					}
 					else
 					{

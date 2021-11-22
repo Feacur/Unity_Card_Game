@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DropArea : FitterController
 {
-	public bool OnDrop()
+	public bool OnDrop(Card card, Vector3 position)
 	{
 		Fitter fitter = GetComponent<Fitter>();
 		int count = fitter.GetCount();

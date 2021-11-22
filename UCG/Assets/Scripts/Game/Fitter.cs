@@ -16,6 +16,12 @@ public class Fitter : MonoBehaviour
 		for (int i = elementsRoot.childCount; i < count; i++)
 		{
 			Fittable instance = GameObject.Instantiate(elementPrefab, parent: elementsRoot, worldPositionStays: false);
+
+			Card card = instance.GetComponent<Card>();
+			if (card)
+			{
+				card.SetContent(i.ToString());
+			}
 		}
 		foreach (Transform child in elementsRoot)
 		{
