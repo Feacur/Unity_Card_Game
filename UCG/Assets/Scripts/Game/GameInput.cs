@@ -4,6 +4,8 @@ public class GameInput : MonoBehaviour
 {
 	public new Camera camera;
 
+	public GameObject[] suspendablesRoots;
+
 	//
 
 	private struct State
@@ -12,6 +14,18 @@ public class GameInput : MonoBehaviour
 		public Card hoveredCard, selectedCard;
 	};
 	private State state;
+
+	private void SetSuspendState(bool state)
+	{
+		if (suspendablesRoots == null) { return; }
+		foreach (GameObject it in suspendablesRoots)
+		{
+			foreach (Collider collider in it.GetComponentsInChildren<Collider>())
+			{
+				collider.enabled = state;
+			}
+		}
+	}
 
 	// MonoBehaviour
 
@@ -33,6 +47,7 @@ public class GameInput : MonoBehaviour
 			{
 				Debug.Log("picked a card");
 				state.selectedCard.gameObject.SetActive(false);
+				SetSuspendState(false);
 			}
 			else
 			{
@@ -69,6 +84,7 @@ public class GameInput : MonoBehaviour
 					state.selectedCard.gameObject.SetActive(true);
 				}
 				state.selectedCard = null;
+				SetSuspendState(true);
 			}
 			else
 			{
