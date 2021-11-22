@@ -1,11 +1,7 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Fitter))]
-public class FitterDebug : MonoBehaviour
+public class FitterDebug : FitterController
 {
-	private const int CountLimit = 10;
-
-	[Range(0, CountLimit)] public int targetLimit;
 	[Range(0, CountLimit)] public int targetCount;
 
 	private int currentCount;
@@ -13,6 +9,7 @@ public class FitterDebug : MonoBehaviour
 	private void UpdateCount()
 	{
 		if (currentCount == targetCount) { return; }
+
 		targetCount = Mathf.Min(targetCount, targetLimit);
 		currentCount = targetCount;
 
@@ -24,6 +21,7 @@ public class FitterDebug : MonoBehaviour
 
 	private void OnValidate()
 	{
+		Fitter fitter = GetComponent<Fitter>();
 		targetCount = Mathf.Min(targetCount, targetLimit);
 	}
 

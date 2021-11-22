@@ -31,42 +31,60 @@ public class GameInput : MonoBehaviour
 			state.selectedCard = state.hoveredCard;
 			if (state.selectedCard)
 			{
-				Debug.Log($"picked a card");
+				Debug.Log("picked a card");
+				state.selectedCard.gameObject.SetActive(false);
 			}
 			else
 			{
-				Debug.Log($"picked nothing");
+				Debug.Log("picked nothing");
 			}
 		}
 		else if (Input.GetMouseButtonUp(0))
 		{
 			if (state.selectedCard)
 			{
-				if (!state.hoveredCard)
+				if (state.hoveredObject)
 				{
-					Debug.Log($"dropped a card");
-				}
-				else if (state.hoveredCard == state.selectedCard)
-				{
-					Debug.Log($"dropped a card onto itself");
+					DropArea dropArea = state.hoveredObject.GetComponent<DropArea>();
+					if (dropArea)
+					{
+						Debug.Log("dropped a card onto a drop area");
+						Fitter cardFitter = state.selectedCard.GetComponentInParent<Fitter>();
+						if (cardFitter)
+						{
+							state.selectedCard.gameObject.SetActive(true);
+							cardFitter.SetCount(cardFitter.GetCount() - 1);
+						}
+						dropArea.OnDrop();
+					}
+					else
+					{
+						Debug.Log("dropped a card onto an object");
+						state.selectedCard.gameObject.SetActive(true);
+					}
 				}
 				else
 				{
-					Debug.Log($"dropped a card onto another one");
+					Debug.Log("dropped a card onto nothing");
+					state.selectedCard.gameObject.SetActive(true);
 				}
 				state.selectedCard = null;
+			}
+			else
+			{
+				Debug.Log("dropeed nothing");
 			}
 		}
 	}
 
 	private void OnGUI()
 	{
-		GUI.Box(new Rect(0, 0, 200, 180),     $"state:");
-		GUI.Label(new Rect(10,  30, 200, 30), $"hovered object .... {(state.hoveredObject ? state.hoveredObject.name : "-")}");
-		GUI.Label(new Rect(10,  60, 200, 30), $"hovered card ...... {(state.hoveredCard ? state.hoveredCard.name : "-")}");
-		GUI.Label(new Rect(10,  90, 200, 30), $"> its index ....... {(state.hoveredCard ? state.hoveredCard.transform.GetSiblingIndex().ToString() : "-")}");
-		GUI.Label(new Rect(10, 120, 200, 30), $"selected card ..... {(state.selectedCard ? state.selectedCard.name : "-")}");
-		GUI.Label(new Rect(10, 150, 200, 30), $"> its index ....... {(state.selectedCard ? state.selectedCard.transform.GetSiblingIndex().ToString() : "-")}");
+		GUI.Box(new Rect(0, 0, 250, 180),     $"state:");
+		GUI.Label(new Rect(10,  30, 250, 30), $"hovered object .... {(state.hoveredObject ? state.hoveredObject.name : "-")}");
+		GUI.Label(new Rect(10,  60, 250, 30), $"hovered card ...... {(state.hoveredCard ? state.hoveredCard.name : "-")}");
+		GUI.Label(new Rect(10,  90, 250, 30), $"> its index ....... {(state.hoveredCard ? state.hoveredCard.transform.GetSiblingIndex().ToString() : "-")}");
+		GUI.Label(new Rect(10, 120, 250, 30), $"selected card ..... {(state.selectedCard ? state.selectedCard.name : "-")}");
+		GUI.Label(new Rect(10, 150, 250, 30), $"> its index ....... {(state.selectedCard ? state.selectedCard.transform.GetSiblingIndex().ToString() : "-")}");
 	}
 }
 

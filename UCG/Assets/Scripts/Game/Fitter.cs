@@ -47,6 +47,16 @@ public class Fitter : MonoBehaviour
 		}
 	}
 
+	public int GetCount()
+	{
+		int count = 0;
+		foreach (Transform child in elementsRoot)
+		{
+			count += child.gameObject.activeSelf ? 1 : 0;
+		}
+		return count;
+	}
+
 	public void SetCount(int count)
 	{
 		// if (cardsRoot.childCount != CardsLimit) { return; }
