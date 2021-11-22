@@ -9,25 +9,39 @@ public class Fitter : MonoBehaviour
 	public Vector3 rotation;
 	[Range(0, 1)] public float separationFraction = 1;
 
-	public void Init(int count)
+	public Fittable Add()
 	{
-		if (elementsRoot.childCount == count) { return; }
-		CalculateDimensions(count, out float separation, out float offset);
-		for (int i = elementsRoot.childCount; i < count; i++)
-		{
-			Fittable instance = GameObject.Instantiate(elementPrefab, parent: elementsRoot, worldPositionStays: false);
-
-			Card card = instance.GetComponent<Card>();
-			if (card)
-			{
-				card.SetContent(i.ToString());
-			}
-		}
 		foreach (Transform child in elementsRoot)
 		{
-			child.gameObject.SetActive(false);
+			if (child.gameObject.activeSelf) { continue; }
+			Fittable fittable = child.GetComponent<Fittable>();
+			if (!fittable) { continue; }
+			fittable.gameObject.SetActive(true);
+			return fittable;
 		}
-		for (int i = 0; i < elementsRoot.childCount; i++)
+
+		Fittable instance = GameObject.Instantiate(elementPrefab, parent: elementsRoot, worldPositionStays: false);
+		instance.gameObject.SetActive(true);
+		return instance;
+	}
+	
+	public bool Remove(int index)
+	{
+		if (index < 0) { return false; }
+		if (index >= elementsRoot.childCount) { return false; }
+
+		Transform child = elementsRoot.GetChild(index);
+		child.gameObject.SetActive(false);
+		child.SetAsLastSibling();
+
+		return true;
+	}
+
+	public void AdjustPositions()
+	{
+		int count = elementsRoot.childCount;
+		CalculateDimensions(count, out float separation, out float offset);
+		for (int i = 0; i < count; i++)
 		{
 			Transform childTransform = elementsRoot.GetChild(i);
 			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
@@ -53,7 +67,7 @@ public class Fitter : MonoBehaviour
 		}
 	}
 
-	public int GetCount()
+	public int GetActiveCount()
 	{
 		int count = 0;
 		foreach (Transform child in elementsRoot)
@@ -63,17 +77,7 @@ public class Fitter : MonoBehaviour
 		return count;
 	}
 
-	public void SetCount(int count)
-	{
-		// if (cardsRoot.childCount != CardsLimit) { return; }
-		CalculateDimensions(count, out float separation, out float offset);
-		for (int i = 0; i < elementsRoot.childCount; i++)
-		{
-			Transform childTransform = elementsRoot.GetChild(i);
-			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
-			childTransform.gameObject.SetActive(i < count);
-		}
-	}
+	public int GetPoolSize() => elementsRoot.childCount;
 
 	private void CalculateDimensions(int count, out float separation, out float offset)
 	{

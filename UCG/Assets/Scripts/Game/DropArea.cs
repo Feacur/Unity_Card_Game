@@ -5,19 +5,12 @@ public class DropArea : FitterController
 	public bool OnDrop(Card card, Vector3 position)
 	{
 		Fitter fitter = GetComponent<Fitter>();
-		int count = fitter.GetCount();
+		int count = fitter.GetActiveCount();
 		if (HaveSpace(count))
 		{
-			fitter.SetCount(count + 1);
+			Fittable fittable = fitter.Add();
+			fitter.AdjustPositions();
 		}
 		return false;
-	}
-
-	// MonoBehaviour
-
-	private void Start()
-	{
-		Fitter fitter = GetComponent<Fitter>();
-		fitter.Init(CountLimit);
 	}
 }

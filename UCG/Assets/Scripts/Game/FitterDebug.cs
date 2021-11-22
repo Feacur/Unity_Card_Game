@@ -4,17 +4,29 @@ public class FitterDebug : FitterController
 {
 	[Range(0, CountLimit)] public int targetCount;
 
-	private int currentCount;
-
 	private void UpdateCount()
 	{
-		if (currentCount == targetCount) { return; }
-
-		targetCount = Mathf.Min(targetCount, targetLimit);
-		currentCount = targetCount;
-
 		Fitter fitter = GetComponent<Fitter>();
-		fitter.SetCount(targetCount);
+
+		int currentCount = fitter.GetActiveCount();
+		targetCount = Mathf.Min(targetCount, targetLimit);
+
+		if (currentCount > targetCount)
+		{
+			for (int i = currentCount; i < targetCount; i--)
+			{
+				fitter.Remove(i);
+			}
+			fitter.AdjustPositions();
+		}
+		else if (currentCount < targetCount)
+		{
+			for (int i = currentCount; i < targetCount; i++)
+			{
+				fitter.Add();
+			}
+			fitter.AdjustPositions();
+		}
 	}
 
 	// MonoBehaviour
@@ -23,12 +35,6 @@ public class FitterDebug : FitterController
 	{
 		Fitter fitter = GetComponent<Fitter>();
 		targetCount = Mathf.Min(targetCount, targetLimit);
-	}
-
-	private void Start()
-	{
-		Fitter fitter = GetComponent<Fitter>();
-		fitter.Init(CountLimit);
 	}
 
 	private void Update()

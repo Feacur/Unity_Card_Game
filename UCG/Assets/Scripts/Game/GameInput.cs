@@ -68,7 +68,8 @@ public class GameInput : MonoBehaviour
 						Fitter cardFitter = state.selectedCard.GetComponentInParent<Fitter>();
 						if (cardFitter)
 						{
-							cardFitter.SetCount(cardFitter.GetCount() - 1);
+							cardFitter.Remove(state.selectedCard.transform.GetSiblingIndex());
+							cardFitter.AdjustPositions();
 						}
 						dropArea.OnDrop(state.selectedCard, Vector3.zero);
 					}
