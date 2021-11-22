@@ -46,7 +46,7 @@ public class GameInput : MonoBehaviour
 			if (state.selectedCard)
 			{
 				Debug.Log("picked a card");
-				state.selectedCard.gameObject.SetActive(false);
+				state.selectedCard.SetVisible(false);
 				SetSuspendState(false);
 			}
 			else
@@ -58,6 +58,7 @@ public class GameInput : MonoBehaviour
 		{
 			if (state.selectedCard)
 			{
+				state.selectedCard.SetVisible(true);
 				if (state.hoveredObject)
 				{
 					DropArea dropArea = state.hoveredObject.GetComponent<DropArea>();
@@ -67,7 +68,6 @@ public class GameInput : MonoBehaviour
 						Fitter cardFitter = state.selectedCard.GetComponentInParent<Fitter>();
 						if (cardFitter)
 						{
-							state.selectedCard.gameObject.SetActive(true);
 							cardFitter.SetCount(cardFitter.GetCount() - 1);
 						}
 						dropArea.OnDrop();
@@ -75,13 +75,11 @@ public class GameInput : MonoBehaviour
 					else
 					{
 						Debug.Log("dropped a card onto an object");
-						state.selectedCard.gameObject.SetActive(true);
 					}
 				}
 				else
 				{
 					Debug.Log("dropped a card onto nothing");
-					state.selectedCard.gameObject.SetActive(true);
 				}
 				state.selectedCard = null;
 				SetSuspendState(true);
