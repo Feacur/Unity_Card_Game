@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
 	public GameObject root;
-	public TMPro.TextMeshPro content;
+	public Text content;
 
 	public void SetVisible(bool state) => root.SetActive(state);
 
