@@ -5,6 +5,7 @@ public class Card : MonoBehaviour
 {
 	public GameObject root;
 	public Text content;
+	public int team;
 
 	public void SetVisible(bool state) => root.SetActive(state);
 

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class FitterDebug : FitterController
 {
+	public int team;
 	[Range(0, CountLimit)] public int inputCount;
 	public bool persistent;
 
@@ -50,6 +51,7 @@ public class FitterDebug : FitterController
 			Card card = fittable.GetComponent<Card>();
 			if (card)
 			{
+				card.team = team;
 				card.SetContent((i + 1).ToString());
 			}
 		}

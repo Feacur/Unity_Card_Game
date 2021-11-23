@@ -62,7 +62,7 @@ public class GameInput : MonoBehaviour
 				if (state.hoveredObject)
 				{
 					DropArea dropArea = state.hoveredObject.GetComponent<DropArea>();
-					if (dropArea)
+					if (dropArea && state.selectedCard.team == dropArea.team)
 					{
 						Debug.Log("dropped a card onto a drop area");
 						Fitter cardFitter = state.selectedCard.GetComponentInParent<Fitter>();
