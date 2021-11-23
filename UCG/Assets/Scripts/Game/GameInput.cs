@@ -20,7 +20,7 @@ public class GameInput : MonoBehaviour
 		if (suspendablesRoots == null) { return; }
 		foreach (GameObject it in suspendablesRoots)
 		{
-			foreach (Collider collider in it.GetComponentsInChildren<Collider>())
+			foreach (Collider collider in it.GetComponentsInChildren<Collider>(includeInactive: true))
 			{
 				collider.enabled = state;
 			}

@@ -8,8 +8,6 @@ public class Card : MonoBehaviour
 
 	public void SetVisible(bool state) => root.SetActive(state);
 
-	public void SetContent(string text)
-	{
-		content.text = text;
-	}
+	public string GetContent() => content.text;
+	public void SetContent(string text) => content.text = text;
 }

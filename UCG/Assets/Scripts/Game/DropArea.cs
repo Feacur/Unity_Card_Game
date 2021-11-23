@@ -10,6 +10,12 @@ public class DropArea : FitterController
 		{
 			Fittable fittable = fitter.Add();
 			fitter.AdjustPositions();
+
+			Card newCard = fittable.GetComponent<Card>();
+			if (newCard)
+			{
+				newCard.SetContent(card.GetContent());
+			}
 		}
 		return false;
 	}

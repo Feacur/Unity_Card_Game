@@ -15,7 +15,6 @@ public class Fitter : MonoBehaviour
 		{
 			if (child.gameObject.activeSelf) { continue; }
 			Fittable fittable = child.GetComponent<Fittable>();
-			if (!fittable) { continue; }
 			fittable.gameObject.SetActive(true);
 			return fittable;
 		}
@@ -24,7 +23,16 @@ public class Fitter : MonoBehaviour
 		instance.gameObject.SetActive(true);
 		return instance;
 	}
-	
+
+	public Fittable Get(int index)
+	{
+		if (index < 0) { return null; }
+		if (index >= elementsRoot.childCount) { return null; }
+
+		Transform child = elementsRoot.GetChild(index);
+		return child.GetComponent<Fittable>();
+	}
+
 	public bool Remove(int index)
 	{
 		if (index < 0) { return false; }
@@ -39,7 +47,7 @@ public class Fitter : MonoBehaviour
 
 	public void AdjustPositions()
 	{
-		int count = elementsRoot.childCount;
+		int count = GetActiveCount();
 		CalculateDimensions(count, out float separation, out float offset);
 		for (int i = 0; i < count; i++)
 		{

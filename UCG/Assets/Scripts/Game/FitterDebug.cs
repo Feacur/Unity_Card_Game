@@ -2,20 +2,20 @@ using UnityEngine;
 
 public class FitterDebug : FitterController
 {
-	[Range(0, CountLimit)] public int targetCount;
+	[Range(0, CountLimit)] public int inputCount;
+	public bool persistent;
 
-	private void UpdateCount()
+	private void SetCount(int targetCount)
 	{
 		Fitter fitter = GetComponent<Fitter>();
 
 		int currentCount = fitter.GetActiveCount();
-		targetCount = Mathf.Min(targetCount, targetLimit);
 
 		if (currentCount > targetCount)
 		{
-			for (int i = currentCount; i < targetCount; i--)
+			for (int i = currentCount; i <= targetCount; i--)
 			{
-				fitter.Remove(i);
+				fitter.Remove(i - 1);
 			}
 			fitter.AdjustPositions();
 		}
@@ -34,12 +34,34 @@ public class FitterDebug : FitterController
 	private void OnValidate()
 	{
 		Fitter fitter = GetComponent<Fitter>();
-		targetCount = Mathf.Min(targetCount, targetLimit);
+		inputCount = Mathf.Min(inputCount, targetLimit);
+	}
+
+	private void Start()
+	{
+		SetCount(CountLimit);
+
+		Fitter fitter = GetComponent<Fitter>();
+		for (int i = 0; i < CountLimit; i++)
+		{
+			Fittable fittable = fitter.Get(i);
+			fittable.name = $"Fittable {(i + 1)}";
+
+			Card card = fittable.GetComponent<Card>();
+			if (card)
+			{
+				card.SetContent((i + 1).ToString());
+			}
+		}
+
+		SetCount(inputCount);
+
+		this.enabled = persistent;
 	}
 
 	private void Update()
 	{
-		UpdateCount();
+		SetCount(Mathf.Min(inputCount, targetLimit));
 	}
 
 	private void Destroy()
