@@ -12,6 +12,7 @@ public class GameInput : MonoBehaviour
 	{
 		public GameObject hoveredObject;
 		public Card hoveredCard, selectedCard;
+		public DropArea dropArea;
 	};
 	private State state;
 
@@ -27,6 +28,65 @@ public class GameInput : MonoBehaviour
 		}
 	}
 
+	private void UpdateHover(Vector3 position)
+	{
+		if (!state.selectedCard) { return; }
+
+		DropArea stateDropArea = state.dropArea;
+		DropArea hoveredDropArea = state.hoveredObject.GetComponent<DropArea>();
+
+		if (stateDropArea)
+		{
+			if (hoveredDropArea && hoveredDropArea == stateDropArea)
+			{
+				stateDropArea.OnHoverUpdate(position);
+				return;
+			}
+
+			state.dropArea = null;
+			stateDropArea.OnHoverExit(position);
+		}
+
+		if (hoveredDropArea && hoveredDropArea.team == state.selectedCard.team)
+		{
+			state.dropArea = hoveredDropArea;
+			hoveredDropArea.OnHoverEnter(position);
+		}
+	}
+
+	private void UpdatePick(Vector3 position)
+	{
+		SetSuspendState(false);
+		if (!state.hoveredCard) { return; }
+		state.selectedCard = state.hoveredCard;
+		state.selectedCard.SetVisible(false);
+	}
+
+	private void UpdateDrop(Vector3 position)
+	{
+		SetSuspendState(true);
+
+		DropArea stateDropArea = state.dropArea;
+		state.dropArea = null;
+		stateDropArea?.OnHoverExit(position);
+
+		Card stateSelectedCard = state.selectedCard;
+		state.selectedCard = null;
+		stateSelectedCard?.SetVisible(true);
+
+		if (!stateSelectedCard) { return; }
+		if (!stateDropArea) { return; }
+		if (stateDropArea.team != stateSelectedCard.team) { return; }
+
+		Fitter cardFitter = stateSelectedCard.GetComponentInParent<Fitter>();
+		if (cardFitter)
+		{
+			cardFitter.Remove(stateSelectedCard.transform.GetSiblingIndex());
+			cardFitter.AdjustPositions();
+		}
+		stateDropArea.OnDrop(stateSelectedCard, position);
+	}
+
 	// MonoBehaviour
 
 	private void Update()
@@ -38,57 +98,16 @@ public class GameInput : MonoBehaviour
 		if (state.hoveredObject)
 		{
 			state.hoveredCard = state.hoveredObject.GetComponent<Card>();
+			UpdateHover(hit.point);
 		}
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			state.selectedCard = state.hoveredCard;
-			if (state.selectedCard)
-			{
-				Debug.Log("picked a card");
-				state.selectedCard.SetVisible(false);
-				SetSuspendState(false);
-			}
-			else
-			{
-				Debug.Log("picked nothing");
-			}
+			UpdatePick(hit.point);
 		}
 		else if (Input.GetMouseButtonUp(0))
 		{
-			if (state.selectedCard)
-			{
-				state.selectedCard.SetVisible(true);
-				if (state.hoveredObject)
-				{
-					DropArea dropArea = state.hoveredObject.GetComponent<DropArea>();
-					if (dropArea && state.selectedCard.team == dropArea.team)
-					{
-						Debug.Log("dropped a card onto a drop area");
-						Fitter cardFitter = state.selectedCard.GetComponentInParent<Fitter>();
-						if (cardFitter)
-						{
-							cardFitter.Remove(state.selectedCard.transform.GetSiblingIndex());
-							cardFitter.AdjustPositions();
-						}
-						dropArea.OnDrop(state.selectedCard, Vector3.zero);
-					}
-					else
-					{
-						Debug.Log("dropped a card onto an object");
-					}
-				}
-				else
-				{
-					Debug.Log("dropped a card onto nothing");
-				}
-				state.selectedCard = null;
-				SetSuspendState(true);
-			}
-			else
-			{
-				Debug.Log("dropeed nothing");
-			}
+			UpdateDrop(hit.point);
 		}
 	}
 
@@ -102,11 +121,3 @@ public class GameInput : MonoBehaviour
 		GUI.Label(new Rect(10, 150, 250, 30), $"> its index ....... {(state.selectedCard ? state.selectedCard.transform.GetSiblingIndex().ToString() : "-")}");
 	}
 }
-
-/*
-- hand cards [temporary] dissapear upon drag
-- hero power, target: arrow from hero power
-- spell cards, no targets: drag
-- spell cards, target: arrow from hero card
-- minion cards: push other minions
-*/

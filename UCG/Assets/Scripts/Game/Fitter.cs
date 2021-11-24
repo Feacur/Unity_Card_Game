@@ -87,6 +87,14 @@ public class Fitter : MonoBehaviour
 
 	public int GetPoolSize() => elementsRoot.childCount;
 
+	public int CalculateFittableIndex(Vector3 position)
+	{
+		int count = GetActiveCount();
+		CalculateDimensions(count, out float separation, out float offset);
+		if (count == 0) { return 0; }
+		return 1;
+	}
+
 	private void CalculateDimensions(int count, out float separation, out float offset)
 	{
 		if (count > 1)
