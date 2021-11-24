@@ -90,9 +90,23 @@ public class Fitter : MonoBehaviour
 	public int CalculateFittableIndex(Vector3 position)
 	{
 		int count = GetActiveCount();
+		if (count <= 1) { return 0; }
+
 		CalculateDimensions(count, out float separation, out float offset);
-		if (count == 0) { return 0; }
-		return 1;
+
+		if (position.x < offset) { return 0; }
+		if (position.x > offset + (count - 1) * separation) { return count - 1; }
+
+		float elementSizeX = elementPrefab.dimensions.size.x;
+		for (int i = 0; i < count; i++)
+		{
+			float localPositionX = offset + i * separation;
+			if (position.x < localPositionX - elementSizeX / 2) { continue; }
+			if (position.x > localPositionX + elementSizeX / 2) { continue; }
+			return i;
+		}
+
+		return 0;
 	}
 
 	private void CalculateDimensions(int count, out float separation, out float offset)
