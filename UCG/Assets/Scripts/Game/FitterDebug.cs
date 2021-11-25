@@ -14,7 +14,7 @@ public class FitterDebug : FitterController
 
 		if (currentCount > targetCount)
 		{
-			for (int i = currentCount; i <= targetCount; i--)
+			for (int i = currentCount; i > targetCount; i--)
 			{
 				fitter.Remove(i - 1);
 			}
