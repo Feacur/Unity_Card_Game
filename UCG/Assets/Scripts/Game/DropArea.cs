@@ -24,6 +24,7 @@ public class DropArea : FitterController
 				newCard.SetContent(card.GetContent());
 				newCard.team = team;
 			}
+			return true;
 		}
 		return false;
 	}

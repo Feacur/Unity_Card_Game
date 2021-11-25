@@ -8,6 +8,7 @@ public class Fitter : MonoBehaviour
 
 	public Vector3 rotation;
 	[Range(0, 1)] public float separationFraction = 1;
+	public bool yankOnSelect;
 
 	public Fittable Add()
 	{

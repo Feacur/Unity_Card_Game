@@ -132,6 +132,7 @@ MonoBehaviour:
   dimensions: {fileID: 6953231668352991804}
   rotation: {x: 0, y: 0, z: 0}
   separationFraction: 1
+  yankOnSelect: 1
 --- !u!114 &4417406192181007055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLimit: 7
+  team: 0
 --- !u!65 &6953231668352991804
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -398,6 +400,7 @@ MonoBehaviour:
   dimensions: {fileID: 2483332961042569694}
   rotation: {x: 0, y: 0, z: 0}
   separationFraction: 1
+  yankOnSelect: 1
 --- !u!114 &8841417350800153727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,7 +414,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLimit: 7
-  targetCount: 5
+  team: 0
+  inputCount: 0
+  persistent: 0
 --- !u!65 &2483332961042569694
 BoxCollider:
   m_ObjectHideFlags: 0
