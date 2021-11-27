@@ -11,7 +11,7 @@ public class GameInput : MonoBehaviour
 	private struct State
 	{
 		public GameObject hoveredObject;
-		public Card hoveredCard, selectedCard;
+		public Fittable hoveredFittable, selectedFittable;
 		public DropArea dropArea;
 		public Fitter sourceFitter;
 		public int selectedIndex;
@@ -32,7 +32,7 @@ public class GameInput : MonoBehaviour
 
 	private void UpdateHover(Vector3 position)
 	{
-		if (!state.selectedCard) { return; }
+		if (!state.selectedFittable) { return; }
 
 		DropArea stateDropArea = state.dropArea;
 		DropArea hoveredDropArea = state.hoveredObject.GetComponent<DropArea>();
@@ -49,28 +49,30 @@ public class GameInput : MonoBehaviour
 			stateDropArea.OnHoverExit(position);
 		}
 
-		if (hoveredDropArea && hoveredDropArea.team == state.selectedCard.team)
-		{
-			state.dropArea = hoveredDropArea;
-			hoveredDropArea.OnHoverEnter(position);
-		}
+		if (!hoveredDropArea) { return; }
+
+		Card stateSelectedCard = state.selectedFittable.GetComponent<Card>();
+		if (hoveredDropArea.team != stateSelectedCard.team) { return; }
+
+		state.dropArea = hoveredDropArea;
+		hoveredDropArea.OnHoverEnter(position);
 	}
 
 	private void UpdatePick(Vector3 position)
 	{
 		SetSuspendState(false);
-		if (!state.hoveredCard) { return; }
+		if (!state.hoveredFittable) { return; }
 
-		state.sourceFitter = state.hoveredCard.GetComponentInParent<Fitter>();
+		state.sourceFitter = state.hoveredFittable.GetComponentInParent<Fitter>();
 		if (!state.sourceFitter) { return; }
 
-		state.selectedCard = state.hoveredCard;
-		state.selectedCard.SetVisible(false);
+		state.selectedFittable = state.hoveredFittable;
+		state.selectedFittable.gameObject.SetActive(false);
 
 		if (state.sourceFitter.yankOnSelect)
 		{
-			state.selectedIndex = state.selectedCard.transform.GetSiblingIndex();
-			state.selectedCard.transform.parent = null;
+			state.selectedIndex = state.selectedFittable.transform.GetSiblingIndex();
+			state.selectedFittable.transform.parent = null;
 		}
 	}
 
@@ -91,21 +93,21 @@ public class GameInput : MonoBehaviour
 		state.dropArea = null;
 		stateDropArea?.OnHoverExit(position);
 
-		Card stateSelectedCard = state.selectedCard;
-		state.selectedCard = null;
-		stateSelectedCard?.SetVisible(true);
+		Fittable stateSelectedFittable = state.selectedFittable;
+		state.selectedFittable = null;
 
-		if (!stateSelectedCard) { return; }
+		if (!stateSelectedFittable) { return; }
+		stateSelectedFittable.gameObject.SetActive(true);
 
 		if (stateSourceFitter.yankOnSelect && (!stateDropArea || stateDropArea.gameObject == stateSourceFitter.gameObject))
 		{
-			foreach (Collider collider in stateSelectedCard.GetComponentsInChildren<Collider>(includeInactive: true))
+			foreach (Collider collider in stateSelectedFittable.GetComponentsInChildren<Collider>(includeInactive: true))
 			{
 				collider.enabled = true;
 			}
 
 			stateSourceFitter.EmplaceActive(
-				stateSelectedCard.GetComponent<Fittable>(),
+				stateSelectedFittable.GetComponent<Fittable>(),
 				stateDropArea
 					? stateSourceFitter.CalculateFittableIndex(stateSourceFitter.GetActiveCount() + 1, position.x)
 					: state.selectedIndex
@@ -115,11 +117,13 @@ public class GameInput : MonoBehaviour
 		}
 
 		if (!stateDropArea) { return; }
+
+		Card stateSelectedCard = stateSelectedFittable.GetComponent<Card>();
 		if (stateDropArea.team != stateSelectedCard.team) { return; }
 
-		if (stateDropArea.OnDrop(stateSelectedCard, position))
+		if (stateDropArea.OnDrop(stateSelectedFittable, position))
 		{
-			stateSourceFitter.Remove(stateSelectedCard.transform.GetSiblingIndex());
+			stateSourceFitter.Remove(stateSelectedFittable.transform.GetSiblingIndex());
 			stateSourceFitter.AdjustPositions();
 		}
 	}
@@ -134,7 +138,7 @@ public class GameInput : MonoBehaviour
 
 		if (state.hoveredObject)
 		{
-			state.hoveredCard = state.hoveredObject.GetComponent<Card>();
+			state.hoveredFittable = state.hoveredObject.GetComponent<Fittable>();
 			UpdateHover(hit.point);
 		}
 
@@ -156,9 +160,9 @@ public class GameInput : MonoBehaviour
 	{
 		GUI.Box(new Rect(0, 0, 250, 180),     $"state:");
 		GUI.Label(new Rect(10,  30, 250, 30), $"hovered object .. {(state.hoveredObject ? state.hoveredObject.name : "-")}");
-		GUI.Label(new Rect(10,  60, 250, 30), $"hovered card .... {(state.hoveredCard ? state.hoveredCard.name : "-")}");
-		GUI.Label(new Rect(10,  90, 250, 30), $"> its index ..... {(state.hoveredCard ? state.hoveredCard.transform.GetSiblingIndex().ToString() : "-")}");
-		GUI.Label(new Rect(10, 120, 250, 30), $"selected card ... {(state.selectedCard ? state.selectedCard.name : "-")}");
-		GUI.Label(new Rect(10, 150, 250, 30), $"> its index ..... {(state.selectedCard ? state.selectedCard.transform.GetSiblingIndex().ToString() : "-")}");
+		GUI.Label(new Rect(10,  60, 250, 30), $"hovered card .... {(state.hoveredFittable ? state.hoveredFittable.name : "-")}");
+		GUI.Label(new Rect(10,  90, 250, 30), $"> its index ..... {(state.hoveredFittable ? state.hoveredFittable.transform.GetSiblingIndex().ToString() : "-")}");
+		GUI.Label(new Rect(10, 120, 250, 30), $"selected card ... {(state.selectedFittable ? state.selectedFittable.name : "-")}");
+		GUI.Label(new Rect(10, 150, 250, 30), $"> its index ..... {(state.selectedFittable ? state.selectedFittable.transform.GetSiblingIndex().ToString() : "-")}");
 	}
 }

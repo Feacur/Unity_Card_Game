@@ -6,19 +6,20 @@ public class DropArea : FitterController
 
 	private Fittable hoveredFittable;
 
-	public bool OnDrop(Card card, Vector3 position)
+	public bool OnDrop(Fittable fittable, Vector3 position)
 	{
 		Fitter fitter = GetComponent<Fitter>();
 		int count = fitter.GetActiveCount();
 		if (HaveSpace(count))
 		{
-			Fittable fittable = fitter.Add();
+			Fittable newFittable = fitter.Add();
 
 			int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
-			fittable.transform.SetSiblingIndex(index);
+			newFittable.transform.SetSiblingIndex(index);
 			fitter.AdjustPositions();
 
-			Card newCard = fittable.GetComponent<Card>();
+			Card card = fittable.GetComponent<Card>();
+			Card newCard = newFittable.GetComponent<Card>();
 			if (newCard)
 			{
 				newCard.SetContent(card.GetContent());
@@ -42,8 +43,7 @@ public class DropArea : FitterController
 			collider.enabled = false;
 		}
 
-		Card card = fittable.GetComponent<Card>();
-		card?.SetVisible(false);
+		fittable.gameObject.SetActive(false);
 
 		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
 		fittable.transform.SetSiblingIndex(index);
@@ -73,8 +73,7 @@ public class DropArea : FitterController
 			collider.enabled = true;
 		}
 
-		Card card = fittable.GetComponent<Card>();
-		card?.SetVisible(true);
+		fittable.gameObject.SetActive(true);
 
 		int index = fittable.transform.GetSiblingIndex();
 		fitter.Remove(index);
