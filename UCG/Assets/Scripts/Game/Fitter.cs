@@ -3,58 +3,98 @@ using UnityEngine;
 public class Fitter : MonoBehaviour
 {
 	public Fittable elementPrefab;
-	public Transform elementsRoot;
+	public Transform activeRoot;
+	public Transform pooledRoot;
 	public BoxCollider dimensions;
 
 	public Vector3 rotation;
 	[Range(0, 1)] public float separationFraction = 1;
 	public bool yankOnSelect;
 
+	// ----- ----- ----- ----- -----
+	//     Dimensions
+	// ----- ----- ----- ----- -----
+
+	public int CalculateFittableIndex(int count, float positionX)
+	{
+		if (count <= 1) { return 0; }
+
+		CalculateMetrics(count, out float separation, out float offset);
+
+		float localPositionOffsetX = positionX - offset;
+		float elementHalfSizeX = elementPrefab.dimensions.size.x / 2;
+		int index = Mathf.FloorToInt((localPositionOffsetX + elementHalfSizeX) / separation);
+
+		return Mathf.Clamp(index, 0, count - 1);
+	}
+
+	public void CalculateMetrics(int count, out float separation, out float offset)
+	{
+		if (count <= 1) { separation = 0; offset = 0; return; }
+
+		float elementSizeX = elementPrefab.dimensions.size.x;
+		float elementCenterBoundsX = dimensions.size.x - elementSizeX;
+		int spacesCount = count - 1;
+
+		separation = Mathf.Min(elementSizeX * separationFraction, elementCenterBoundsX / spacesCount);
+		offset = - separation * spacesCount / 2;
+	}
+
+	// ----- ----- ----- ----- -----
+	//     Content
+	// ----- ----- ----- ----- -----
+
+	public int GetActiveCount() => activeRoot.childCount;
+	public int GetPooledCount() => pooledRoot.childCount;
+
+	public void EmplaceActive(Fittable fittable, int index)
+	{
+		fittable.transform.SetParent(activeRoot, worldPositionStays: false);
+		fittable.transform.SetSiblingIndex(index);
+	}
+
+	public void EmplacePooled(Fittable fittable)
+	{
+		fittable.transform.SetParent(pooledRoot, worldPositionStays: false);
+	}
+
 	public Fittable Add()
 	{
-		foreach (Transform child in elementsRoot)
+		foreach (Transform child in pooledRoot)
 		{
-			if (child.gameObject.activeSelf) { continue; }
-			Fittable fittable = child.GetComponent<Fittable>();
-			fittable.gameObject.SetActive(true);
-			return fittable;
+			child.SetParent(activeRoot, worldPositionStays: false);
+			return child.GetComponent<Fittable>();
 		}
 
-		Fittable instance = GameObject.Instantiate(elementPrefab, parent: elementsRoot, worldPositionStays: false);
-		instance.gameObject.SetActive(true);
-		return instance;
+		return GameObject.Instantiate(elementPrefab, parent: activeRoot, worldPositionStays: false);
 	}
 
 	public Fittable Get(int index)
 	{
 		if (index < 0) { return null; }
-		if (index >= elementsRoot.childCount) { return null; }
+		if (index >= activeRoot.childCount) { return null; }
 
-		Transform child = elementsRoot.GetChild(index);
+		Transform child = activeRoot.GetChild(index);
 		return child.GetComponent<Fittable>();
 	}
 
 	public bool Remove(int index)
 	{
 		if (index < 0) { return false; }
-		if (index >= elementsRoot.childCount) { return false; }
+		if (index >= activeRoot.childCount) { return false; }
 
-		Transform child = elementsRoot.GetChild(index);
-		child.gameObject.SetActive(false);
-		child.SetAsLastSibling();
+		Transform child = activeRoot.GetChild(index);
+		child.SetParent(pooledRoot, worldPositionStays: false);
 
 		return true;
 	}
 
-	public void AdjustPositions()
+	public void Reset()
 	{
-		int count = GetActiveCount();
-		CalculateDimensions(count, out float separation, out float offset);
-		for (int i = 0; i < count; i++)
+		while (activeRoot.childCount > 0)
 		{
-			Transform childTransform = elementsRoot.GetChild(i);
-			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
-			childTransform.localRotation = Quaternion.Euler(rotation);
+			Transform child = activeRoot.GetChild(0);
+			child.SetParent(pooledRoot, worldPositionStays: false);
 		}
 	}
 
@@ -62,68 +102,43 @@ public class Fitter : MonoBehaviour
 	{
 		if (Application.isPlaying)
 		{
-			foreach (Transform child in elementsRoot)
+			foreach (Transform child in activeRoot)
+			{
+				GameObject.Destroy(child.gameObject);
+			}
+			foreach (Transform child in pooledRoot)
 			{
 				GameObject.Destroy(child.gameObject);
 			}
 		}
 		else
 		{
-			while (elementsRoot.childCount > 0)
+			while (activeRoot.childCount > 0)
 			{
-				GameObject.DestroyImmediate(elementsRoot.GetChild(0).gameObject);
+				Transform child = activeRoot.GetChild(0);
+				GameObject.DestroyImmediate(child.gameObject);
+			}
+			while (pooledRoot.childCount > 0)
+			{
+				Transform child = pooledRoot.GetChild(0);
+				GameObject.DestroyImmediate(child.gameObject);
 			}
 		}
 	}
 
-	public int GetActiveCount()
-	{
-		int count = 0;
-		foreach (Transform child in elementsRoot)
-		{
-			count += child.gameObject.activeSelf ? 1 : 0;
-		}
-		return count;
-	}
+	// ----- ----- ----- ----- -----
+	//     Animation
+	// ----- ----- ----- ----- -----
 
-	public int GetPoolSize() => elementsRoot.childCount;
-
-	public int CalculateFittableIndex(Vector3 position)
+	public void AdjustPositions()
 	{
 		int count = GetActiveCount();
-		if (count <= 1) { return 0; }
-
-		CalculateDimensions(count, out float separation, out float offset);
-
-		if (position.x < offset) { return 0; }
-		if (position.x > offset + (count - 1) * separation) { return count - 1; }
-
-		float elementSizeX = elementPrefab.dimensions.size.x;
+		CalculateMetrics(count, out float separation, out float offset);
 		for (int i = 0; i < count; i++)
 		{
-			float localPositionX = offset + i * separation;
-			if (position.x < localPositionX - elementSizeX / 2) { continue; }
-			if (position.x > localPositionX + elementSizeX / 2) { continue; }
-			return i;
+			Transform childTransform = activeRoot.GetChild(i);
+			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
+			childTransform.localRotation = Quaternion.Euler(rotation);
 		}
-
-		return 0;
-	}
-
-	private void CalculateDimensions(int count, out float separation, out float offset)
-	{
-		if (count > 1)
-		{
-			float elementSizeX = elementPrefab.dimensions.size.x;
-			float extentsX = dimensions.size.x - elementSizeX;
-
-			int spacesCount = count - 1;
-			separation = Mathf.Min(elementSizeX * separationFraction, extentsX / spacesCount);
-			offset = - separation * spacesCount / 2;
-			return;
-		}
-
-		separation = 0;
-		offset = 0;
 	}
 }

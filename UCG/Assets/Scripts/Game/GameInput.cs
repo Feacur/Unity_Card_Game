@@ -104,9 +104,11 @@ public class GameInput : MonoBehaviour
 				collider.enabled = true;
 			}
 
-			stateSelectedCard.transform.SetParent(stateSourceFitter.elementsRoot, worldPositionStays: false);
-			stateSelectedCard.transform.SetSiblingIndex(
-				stateDropArea ? stateSourceFitter.CalculateFittableIndex(position) : state.selectedIndex
+			stateSourceFitter.EmplaceActive(
+				stateSelectedCard.GetComponent<Fittable>(),
+				stateDropArea
+					? stateSourceFitter.CalculateFittableIndex(stateSourceFitter.GetActiveCount() + 1, position.x)
+					: state.selectedIndex
 			);
 			stateSourceFitter.AdjustPositions();
 			return;

@@ -14,7 +14,7 @@ public class DropArea : FitterController
 		{
 			Fittable fittable = fitter.Add();
 
-			int index = fitter.CalculateFittableIndex(position);
+			int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
 			fittable.transform.SetSiblingIndex(index);
 			fitter.AdjustPositions();
 
@@ -45,7 +45,7 @@ public class DropArea : FitterController
 		Card card = fittable.GetComponent<Card>();
 		card?.SetVisible(false);
 
-		int index = fitter.CalculateFittableIndex(position);
+		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
 		fittable.transform.SetSiblingIndex(index);
 		fitter.AdjustPositions();
 	}
@@ -55,7 +55,7 @@ public class DropArea : FitterController
 		if (!hoveredFittable) { return; }
 		Fitter fitter = GetComponent<Fitter>();
 
-		int index = fitter.CalculateFittableIndex(position);
+		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
 		hoveredFittable.transform.SetSiblingIndex(index);
 		fitter.AdjustPositions();
 	}

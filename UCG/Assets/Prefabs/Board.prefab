@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &745876353424918398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2290150036970449960}
+  m_Layer: 0
+  m_Name: Pooled Root
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2290150036970449960
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745876353424918398}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4615077928320220310}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1134989980379904128
 GameObject:
   m_ObjectHideFlags: 0
@@ -112,6 +142,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8972953827914023387}
+  - {fileID: 2290150036970449960}
   m_Father: {fileID: 7358831241729350879}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -128,7 +159,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementPrefab: {fileID: 1917796299787667722, guid: 865e0db27ca48134dbf66bb167d3c96c, type: 3}
-  elementsRoot: {fileID: 8972953827914023387}
+  activeRoot: {fileID: 8972953827914023387}
+  pooledRoot: {fileID: 2290150036970449960}
   dimensions: {fileID: 6953231668352991804}
   rotation: {x: 0, y: 0, z: 0}
   separationFraction: 1
@@ -170,7 +202,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8972953827914023387}
   m_Layer: 0
-  m_Name: Elements Root
+  m_Name: Active Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -329,7 +361,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8586215460325836959}
   m_Layer: 0
-  m_Name: Elements Root
+  m_Name: Active Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -348,6 +380,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6532496324413063936}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7994098907601878605
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5232665342209775024}
+  m_Layer: 0
+  m_Name: Pooled Root
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &5232665342209775024
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7994098907601878605}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6532496324413063936}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8171323685928102959
 GameObject:
@@ -380,6 +442,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8586215460325836959}
+  - {fileID: 5232665342209775024}
   m_Father: {fileID: 7358831241729350879}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -396,7 +459,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementPrefab: {fileID: 1917796299787667722, guid: 865e0db27ca48134dbf66bb167d3c96c, type: 3}
-  elementsRoot: {fileID: 8586215460325836959}
+  activeRoot: {fileID: 8586215460325836959}
+  pooledRoot: {fileID: 5232665342209775024}
   dimensions: {fileID: 2483332961042569694}
   rotation: {x: 0, y: 0, z: 0}
   separationFraction: 1
