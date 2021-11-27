@@ -32,12 +32,6 @@ public class FitterDebug : FitterController
 
 	// MonoBehaviour
 
-	private void OnValidate()
-	{
-		Fitter fitter = GetComponent<Fitter>();
-		inputCount = Mathf.Min(inputCount, targetLimit);
-	}
-
 	private void Start()
 	{
 		SetCount(CountLimit);
@@ -45,17 +39,12 @@ public class FitterDebug : FitterController
 		Fitter fitter = GetComponent<Fitter>();
 		for (int i = 0; i < CountLimit; i++)
 		{
-			Fittable fittable = fitter.Get(i);
-			fittable.name = $"Fittable {(i + 1)}";
-
-			Card card = fittable.GetComponent<Card>();
-			if (card)
-			{
-				card.team = team;
-				card.SetContent((i + 1).ToString());
-			}
+			IFittable fittable = fitter.Get(i);
+			fittable.SetTeam(team);
+			fittable.SetContent((i + 1).ToString());
 		}
 
+		inputCount = Mathf.Min(inputCount, targetLimit);
 		SetCount(inputCount);
 
 		this.enabled = persistent;
@@ -63,7 +52,8 @@ public class FitterDebug : FitterController
 
 	private void Update()
 	{
-		SetCount(Mathf.Min(inputCount, targetLimit));
+		inputCount = Mathf.Min(inputCount, targetLimit);
+		SetCount(inputCount);
 	}
 
 	private void Destroy()

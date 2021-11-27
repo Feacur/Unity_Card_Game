@@ -123,16 +123,28 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &162654802 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4833117485760295932, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
-  m_PrefabInstance: {fileID: 7358831243080814450}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1252679959 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8831524263892324581, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+--- !u!114 &1574881351 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8856646002923374077, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
   m_PrefabInstance: {fileID: 6041947991114057337}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1733729880 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2875874921707157771, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
+  m_PrefabInstance: {fileID: 7358831243080814450}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1924347126
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,9 +175,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 2056027631}
-  suspendablesRoots:
-  - {fileID: 162654802}
-  - {fileID: 1252679959}
+  suspendables:
+  - {fileID: 1733729880}
+  - {fileID: 1574881351}
 --- !u!4 &1924347128
 Transform:
   m_ObjectHideFlags: 0

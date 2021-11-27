@@ -1,82 +1,98 @@
 using UnityEngine;
 
 public class DropArea : FitterController
+	, IHoverable
 {
 	public int team;
 
-	private Fittable hoveredFittable;
+	private IFittable hoveredFittable;
 
-	public bool OnDrop(Fittable fittable, Vector3 position)
-	{
-		Fitter fitter = GetComponent<Fitter>();
-		int count = fitter.GetActiveCount();
-		if (HaveSpace(count))
-		{
-			Fittable newFittable = fitter.Add();
+	// ----- ----- ----- ----- -----
+	//     IGameObject
+	// ----- ----- ----- ----- -----
 
-			int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
-			newFittable.transform.SetSiblingIndex(index);
-			fitter.AdjustPositions();
+	GameObject IGameObject.GetGO() => gameObject;
 
-			Card card = fittable.GetComponent<Card>();
-			Card newCard = newFittable.GetComponent<Card>();
-			if (newCard)
-			{
-				newCard.SetContent(card.GetContent());
-				newCard.team = team;
-			}
-			return true;
-		}
-		return false;
-	}
+	// ----- ----- ----- ----- -----
+	//     IHoverable
+	// ----- ----- ----- ----- -----
 
-	public void OnHoverEnter(Vector3 position)
+	void IHoverable.OnEnter(Vector3 position)
 	{
 		Fitter fitter = GetComponent<Fitter>();
 		if (!HaveSpace(fitter.GetActiveCount())) { return; }
 
-		Fittable fittable = fitter.Add();
+		IFittable fittable = fitter.Add();
 		hoveredFittable = fittable;
 
-		foreach (Collider collider in fittable.GetComponentsInChildren<Collider>(includeInactive: true))
+		foreach (Collider collider in fittable.GetGO().GetComponentsInChildren<Collider>(includeInactive: true))
 		{
 			collider.enabled = false;
 		}
 
-		fittable.gameObject.SetActive(false);
+		fittable.GetGO().SetActive(false);
 
 		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
-		fittable.transform.SetSiblingIndex(index);
+		fittable.GetGO().transform.SetSiblingIndex(index);
 		fitter.AdjustPositions();
 	}
 
-	public void OnHoverUpdate(Vector3 position)
+	void IHoverable.OnUpdate(Vector3 position)
 	{
-		if (!hoveredFittable) { return; }
+		if (hoveredFittable == null) { return; }
 		Fitter fitter = GetComponent<Fitter>();
 
 		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
-		hoveredFittable.transform.SetSiblingIndex(index);
+		hoveredFittable.GetGO().transform.SetSiblingIndex(index);
 		fitter.AdjustPositions();
 	}
 
-	public void OnHoverExit(Vector3 position)
+	void IHoverable.OnExit(Vector3 position)
 	{
-		if (!hoveredFittable) { return; }
+		if (hoveredFittable == null) { return; }
 		Fitter fitter = GetComponent<Fitter>();
 
-		Fittable fittable = hoveredFittable;
+		IFittable fittable = hoveredFittable;
 		hoveredFittable = null;
 
-		foreach (Collider collider in fittable.GetComponentsInChildren<Collider>(includeInactive: true))
+		foreach (Collider collider in fittable.GetGO().GetComponentsInChildren<Collider>(includeInactive: true))
 		{
 			collider.enabled = true;
 		}
 
-		fittable.gameObject.SetActive(true);
+		fittable.GetGO().SetActive(true);
 
-		int index = fittable.transform.GetSiblingIndex();
+		int index = fittable.GetGO().transform.GetSiblingIndex();
 		fitter.Remove(index);
 		fitter.AdjustPositions();
+	}
+
+	// ----- ----- ----- ----- -----
+	//     Implementation
+	// ----- ----- ----- ----- -----
+
+	public bool OnDrop(IDraggable draggable, Vector3 position)
+	{
+		if (team != draggable.GetTeam()) { return false; }
+
+		IFittable draggableFittable = draggable.GetGO().GetComponent<IFittable>();
+		if (draggableFittable == null) { return false; }
+
+		Fitter fitter = GetComponent<Fitter>();
+		int count = fitter.GetActiveCount();
+		if (HaveSpace(count))
+		{
+
+			IFittable newElement = fitter.Add();
+			newElement.SetTeam(team);
+			newElement.SetContent(draggableFittable.GetContent());
+
+			int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
+			newElement.GetGO().transform.SetSiblingIndex(index);
+			fitter.AdjustPositions();
+
+			return true;
+		}
+		return false;
 	}
 }

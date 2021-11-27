@@ -159,10 +159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dimensions: {fileID: 391241506460618281}
   elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
   activeRoot: {fileID: 2806200367217325867}
   pooledRoot: {fileID: 4824278855069592465}
-  dimensions: {fileID: 391241506460618281}
   rotation: {x: 0, y: 0, z: 5}
   separationFraction: 0.9
   yankOnSelect: 0
@@ -190,7 +190,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6041947992403909291}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 8, y: 0.01, z: 2}

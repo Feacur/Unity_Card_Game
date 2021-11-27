@@ -1,11 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Fitter : MonoBehaviour
 {
-	public Fittable elementPrefab;
-	public Transform activeRoot;
-	public Transform pooledRoot;
-	public BoxCollider dimensions;
+	[SerializeField] private BoxCollider dimensions;
+
+	[SerializeField] private Fittable elementPrefab;
+	[SerializeField] private Transform activeRoot;
+	[SerializeField] private Transform pooledRoot;
 
 	public Vector3 rotation;
 	[Range(0, 1)] public float separationFraction = 1;
@@ -15,6 +17,8 @@ public class Fitter : MonoBehaviour
 	//     Dimensions
 	// ----- ----- ----- ----- -----
 
+	public Vector3 GetSize() => dimensions.size;
+
 	public int CalculateFittableIndex(int count, float positionX)
 	{
 		if (count <= 1) { return 0; }
@@ -22,7 +26,7 @@ public class Fitter : MonoBehaviour
 		CalculateMetrics(count, out float separation, out float offset);
 
 		float localPositionOffsetX = positionX - offset;
-		float elementHalfSizeX = elementPrefab.dimensions.size.x / 2;
+		float elementHalfSizeX = elementPrefab.GetSize().x / 2;
 		int index = Mathf.FloorToInt((localPositionOffsetX + elementHalfSizeX) / separation);
 
 		return Mathf.Clamp(index, 0, count - 1);
@@ -32,8 +36,8 @@ public class Fitter : MonoBehaviour
 	{
 		if (count <= 1) { separation = 0; offset = 0; return; }
 
-		float elementSizeX = elementPrefab.dimensions.size.x;
-		float elementCenterBoundsX = dimensions.size.x - elementSizeX;
+		float elementSizeX = elementPrefab.GetSize().x;
+		float elementCenterBoundsX = GetSize().x - elementSizeX;
 		int spacesCount = count - 1;
 
 		separation = Mathf.Min(elementSizeX * separationFraction, elementCenterBoundsX / spacesCount);
@@ -58,24 +62,24 @@ public class Fitter : MonoBehaviour
 		fittable.transform.SetParent(pooledRoot, worldPositionStays: false);
 	}
 
-	public Fittable Add()
+	public IFittable Add()
 	{
 		foreach (Transform child in pooledRoot)
 		{
 			child.SetParent(activeRoot, worldPositionStays: false);
-			return child.GetComponent<Fittable>();
+			return child.GetComponent<IFittable>();
 		}
 
 		return GameObject.Instantiate(elementPrefab, parent: activeRoot, worldPositionStays: false);
 	}
 
-	public Fittable Get(int index)
+	public IFittable Get(int index)
 	{
 		if (index < 0) { return null; }
 		if (index >= activeRoot.childCount) { return null; }
 
 		Transform child = activeRoot.GetChild(index);
-		return child.GetComponent<Fittable>();
+		return child.GetComponent<IFittable>();
 	}
 
 	public bool Remove(int index)
@@ -140,5 +144,20 @@ public class Fitter : MonoBehaviour
 			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
 			childTransform.localRotation = Quaternion.Euler(rotation);
 		}
+	}
+
+	// ----- ----- ----- ----- -----
+	//     Animation
+	// ----- ----- ----- ----- -----
+
+	private List<IInteractable> interactables = new List<IInteractable>();
+	public void SetElementsInteractable(bool state)
+	{
+		activeRoot.GetComponentsInChildren<IInteractable>(includeInactive: true, result: interactables);
+		foreach (IInteractable interactable in interactables)
+		{
+			interactable.SetState(state);
+		}
+		interactables.Clear();
 	}
 }

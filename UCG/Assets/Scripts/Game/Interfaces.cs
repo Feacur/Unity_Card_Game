@@ -1,0 +1,40 @@
+using UnityEngine;
+
+public interface IGameObject
+{
+	GameObject GetGO();
+}
+
+public interface ICompatible
+{
+	int GetTeam();
+	void SetTeam(int value);
+}
+
+public interface IHoverable : IGameObject
+{
+	void OnEnter(Vector3 position);
+	void OnUpdate(Vector3 position);
+	void OnExit(Vector3 position);
+}
+
+public interface IDraggable : IGameObject
+	, ICompatible
+{
+	void OnPick(Vector3 position);
+	void OnUpdate(Vector3 position);
+	void OnDrop(Vector3 position);
+}
+
+public interface IInteractable : IGameObject
+{
+	bool GetState();
+	void SetState(bool value);
+}
+
+public interface IFittable : IGameObject
+	, ICompatible
+{
+	string GetContent();
+	void SetContent(string value);
+}

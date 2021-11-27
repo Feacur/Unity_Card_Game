@@ -158,10 +158,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dimensions: {fileID: 6953231668352991804}
   elementPrefab: {fileID: 1917796299787667722, guid: 865e0db27ca48134dbf66bb167d3c96c, type: 3}
   activeRoot: {fileID: 8972953827914023387}
   pooledRoot: {fileID: 2290150036970449960}
-  dimensions: {fileID: 6953231668352991804}
   rotation: {x: 0, y: 0, z: 0}
   separationFraction: 1
   yankOnSelect: 1
@@ -187,7 +187,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575330716877507460}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 13, y: 0.01, z: 2.8}
@@ -346,7 +346,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7358831241729350878}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 13, y: 0.01, z: 9.67}
@@ -458,10 +458,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dimensions: {fileID: 2483332961042569694}
   elementPrefab: {fileID: 1917796299787667722, guid: 865e0db27ca48134dbf66bb167d3c96c, type: 3}
   activeRoot: {fileID: 8586215460325836959}
   pooledRoot: {fileID: 5232665342209775024}
-  dimensions: {fileID: 2483332961042569694}
   rotation: {x: 0, y: 0, z: 0}
   separationFraction: 1
   yankOnSelect: 1
@@ -489,7 +489,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8171323685928102959}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 13, y: 0.01, z: 2.8}

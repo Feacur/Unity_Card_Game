@@ -4,127 +4,110 @@ public class GameInput : MonoBehaviour
 {
 	public new Camera camera;
 
-	public GameObject[] suspendablesRoots;
+	public Fitter[] suspendables;
 
 	//
 
 	private struct State
 	{
-		public GameObject hoveredObject;
-		public Fittable hoveredFittable, selectedFittable;
-		public DropArea dropArea;
-		public Fitter sourceFitter;
-		public int selectedIndex;
+		public IHoverable hoverable;
+		public IDraggable picked;
+		public int pickedIndex;
+		public Fitter pickedParent;
 	};
 	private State state;
 
-	private void SetSuspendState(bool state)
+	private void UpdateHover(GameObject hovered, Vector3 position)
 	{
-		if (suspendablesRoots == null) { return; }
-		foreach (GameObject it in suspendablesRoots)
+		IHoverable currentHoverable = hovered?.GetComponent<IHoverable>();
+
+		if (state.hoverable != null)
 		{
-			foreach (Collider collider in it.GetComponentsInChildren<Collider>(includeInactive: true))
+			if (ReferenceEquals(currentHoverable, state.hoverable))
 			{
-				collider.enabled = state;
-			}
-		}
-	}
-
-	private void UpdateHover(Vector3 position)
-	{
-		if (!state.selectedFittable) { return; }
-
-		DropArea stateDropArea = state.dropArea;
-		DropArea hoveredDropArea = state.hoveredObject.GetComponent<DropArea>();
-
-		if (stateDropArea)
-		{
-			if (hoveredDropArea && hoveredDropArea == stateDropArea)
-			{
-				stateDropArea.OnHoverUpdate(position);
+				state.hoverable.OnUpdate(position);
 				return;
 			}
 
-			state.dropArea = null;
-			stateDropArea.OnHoverExit(position);
+			state.hoverable.OnExit(position);
+			state.hoverable = null;
 		}
 
-		if (!hoveredDropArea) { return; }
-
-		Card stateSelectedCard = state.selectedFittable.GetComponent<Card>();
-		if (hoveredDropArea.team != stateSelectedCard.team) { return; }
-
-		state.dropArea = hoveredDropArea;
-		hoveredDropArea.OnHoverEnter(position);
-	}
-
-	private void UpdatePick(Vector3 position)
-	{
-		SetSuspendState(false);
-		if (!state.hoveredFittable) { return; }
-
-		state.sourceFitter = state.hoveredFittable.GetComponentInParent<Fitter>();
-		if (!state.sourceFitter) { return; }
-
-		state.selectedFittable = state.hoveredFittable;
-		state.selectedFittable.gameObject.SetActive(false);
-
-		if (state.sourceFitter.yankOnSelect)
+		if (currentHoverable != null)
 		{
-			state.selectedIndex = state.selectedFittable.transform.GetSiblingIndex();
-			state.selectedFittable.transform.parent = null;
+			state.hoverable = currentHoverable;
+			currentHoverable.OnEnter(position);
 		}
 	}
 
-	// private void UpdateDrag(Vector3 position)
-	// {
-	// 	if (!state.selectedCard) { return; }
-	// 	state.selectedCard.transform.localPosition = position;
-	// }
-
-	private void UpdateDrop(Vector3 position)
+	private void UpdatePick(GameObject hovered, Vector3 position)
 	{
-		SetSuspendState(true);
+		if (!hovered) { return; }
 
-		Fitter stateSourceFitter = state.sourceFitter;
-		state.sourceFitter = null;
+		IDraggable draggable = hovered.GetComponent<IDraggable>();
+		if (draggable == null) { return; }
 
-		DropArea stateDropArea = state.dropArea;
-		state.dropArea = null;
-		stateDropArea?.OnHoverExit(position);
+		state.pickedParent = hovered.GetComponentInParent<Fitter>();
+		if (!state.pickedParent) { return; }
 
-		Fittable stateSelectedFittable = state.selectedFittable;
-		state.selectedFittable = null;
-
-		if (!stateSelectedFittable) { return; }
-		stateSelectedFittable.gameObject.SetActive(true);
-
-		if (stateSourceFitter.yankOnSelect && (!stateDropArea || stateDropArea.gameObject == stateSourceFitter.gameObject))
+		foreach (Fitter it in suspendables)
 		{
-			foreach (Collider collider in stateSelectedFittable.GetComponentsInChildren<Collider>(includeInactive: true))
-			{
-				collider.enabled = true;
-			}
+			it.SetElementsInteractable(state: false);
+		}
 
-			stateSourceFitter.EmplaceActive(
-				stateSelectedFittable.GetComponent<Fittable>(),
-				stateDropArea
-					? stateSourceFitter.CalculateFittableIndex(stateSourceFitter.GetActiveCount() + 1, position.x)
-					: state.selectedIndex
+		state.picked = draggable;
+		state.picked.OnPick(position);
+		state.pickedIndex = state.picked.GetGO().transform.GetSiblingIndex();
+		state.picked.GetGO().SetActive(false);
+
+		if (state.pickedParent.yankOnSelect)
+		{
+			state.picked.GetGO().transform.parent = null;
+		}
+	}
+
+	private void UpdateDrag(GameObject hovered, Vector3 position)
+	{
+		if (state.picked == null) { return; }
+		state.picked.OnUpdate(position);
+	}
+
+	private void UpdateDrop(GameObject hovered, Vector3 position)
+	{
+		State state = this.state;
+		this.state = default;
+
+		state.hoverable?.OnExit(position);
+
+		if (state.picked == null) { return; }
+		state.picked.OnDrop(position);
+		state.picked.GetGO().SetActive(true);
+
+		if (state.pickedParent.yankOnSelect && (state.hoverable == null || hovered == state.pickedParent.gameObject))
+		{
+			state.pickedParent.EmplaceActive(
+				state.picked.GetGO().GetComponent<Fittable>(),
+				state.hoverable != null
+					? state.pickedParent.CalculateFittableIndex(state.pickedParent.GetActiveCount() + 1, position.x)
+					: state.pickedIndex
 			);
-			stateSourceFitter.AdjustPositions();
-			return;
+			state.pickedParent.AdjustPositions();
+			goto finalize;
 		}
 
-		if (!stateDropArea) { return; }
+		if (state.hoverable == null) { goto finalize; }
 
-		Card stateSelectedCard = stateSelectedFittable.GetComponent<Card>();
-		if (stateDropArea.team != stateSelectedCard.team) { return; }
-
-		if (stateDropArea.OnDrop(stateSelectedFittable, position))
+		DropArea dropArea = hovered.GetComponent<DropArea>();
+		if (dropArea && dropArea.OnDrop(state.picked, position))
 		{
-			stateSourceFitter.Remove(stateSelectedFittable.transform.GetSiblingIndex());
-			stateSourceFitter.AdjustPositions();
+			state.pickedParent.Remove(state.picked.GetGO().transform.GetSiblingIndex());
+			state.pickedParent.AdjustPositions();
+		}
+
+		finalize:
+		foreach (Fitter it in suspendables)
+		{
+			it.SetElementsInteractable(state: true);
 		}
 	}
 
@@ -134,35 +117,24 @@ public class GameInput : MonoBehaviour
 	{
 		Ray inputRay = camera.ScreenPointToRay(Input.mousePosition);
 		Physics.Raycast(inputRay, out RaycastHit hit);
-		state.hoveredObject = hit.transform ? hit.transform.gameObject : null;
 
-		if (state.hoveredObject)
+		GameObject hovered = hit.transform ? hit.transform.gameObject : null;
+		if (state.picked != null)
 		{
-			state.hoveredFittable = state.hoveredObject.GetComponent<Fittable>();
-			UpdateHover(hit.point);
+			UpdateHover(hovered, hit.point);
 		}
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			UpdatePick(hit.point);
+			UpdatePick(hovered, hit.point);
 		}
 		else if (Input.GetMouseButtonUp(0))
 		{
-			UpdateDrop(hit.point);
+			UpdateDrop(hovered, hit.point);
 		}
-		// else
-		// {
-		// 	UpdateDrag(hit.point);
-		// }
-	}
-
-	private void OnGUI()
-	{
-		GUI.Box(new Rect(0, 0, 250, 180),     $"state:");
-		GUI.Label(new Rect(10,  30, 250, 30), $"hovered object .. {(state.hoveredObject ? state.hoveredObject.name : "-")}");
-		GUI.Label(new Rect(10,  60, 250, 30), $"hovered card .... {(state.hoveredFittable ? state.hoveredFittable.name : "-")}");
-		GUI.Label(new Rect(10,  90, 250, 30), $"> its index ..... {(state.hoveredFittable ? state.hoveredFittable.transform.GetSiblingIndex().ToString() : "-")}");
-		GUI.Label(new Rect(10, 120, 250, 30), $"selected card ... {(state.selectedFittable ? state.selectedFittable.name : "-")}");
-		GUI.Label(new Rect(10, 150, 250, 30), $"> its index ..... {(state.selectedFittable ? state.selectedFittable.transform.GetSiblingIndex().ToString() : "-")}");
+		else
+		{
+			UpdateDrag(hovered, hit.point);
+		}
 	}
 }
