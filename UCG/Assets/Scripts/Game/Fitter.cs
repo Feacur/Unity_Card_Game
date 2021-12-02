@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Fitter : MonoBehaviour
@@ -11,7 +10,6 @@ public class Fitter : MonoBehaviour
 
 	public Vector3 rotation;
 	[Range(0, 1)] public float separationFraction = 1;
-	public bool yankOnSelect;
 
 	// ----- ----- ----- ----- -----
 	//     Dimensions
@@ -51,15 +49,17 @@ public class Fitter : MonoBehaviour
 	public int GetActiveCount() => activeRoot.childCount;
 	public int GetPooledCount() => pooledRoot.childCount;
 
-	public void EmplaceActive(Fittable fittable, int index)
+	public void EmplaceActive(IFittable fittable, int index)
 	{
-		fittable.transform.SetParent(activeRoot, worldPositionStays: false);
-		fittable.transform.SetSiblingIndex(index);
+		Transform fittableTransform = fittable.GetGO().transform;
+		fittableTransform.SetParent(activeRoot, worldPositionStays: false);
+		fittableTransform.SetSiblingIndex(index);
 	}
 
-	public void EmplacePooled(Fittable fittable)
+	public void EmplacePooled(IFittable fittable)
 	{
-		fittable.transform.SetParent(pooledRoot, worldPositionStays: false);
+		Transform fittableTransform = fittable.GetGO().transform;
+		fittableTransform.SetParent(pooledRoot, worldPositionStays: false);
 	}
 
 	public IFittable Add()
@@ -144,20 +144,5 @@ public class Fitter : MonoBehaviour
 			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
 			childTransform.localRotation = Quaternion.Euler(rotation);
 		}
-	}
-
-	// ----- ----- ----- ----- -----
-	//     Animation
-	// ----- ----- ----- ----- -----
-
-	private List<IInteractable> interactables = new List<IInteractable>();
-	public void SetElementsInteractable(bool state)
-	{
-		activeRoot.GetComponentsInChildren<IInteractable>(includeInactive: true, result: interactables);
-		foreach (IInteractable interactable in interactables)
-		{
-			interactable.SetState(state);
-		}
-		interactables.Clear();
 	}
 }

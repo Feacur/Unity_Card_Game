@@ -1,6 +1,7 @@
 using UnityEngine;
 
 public class FitterDebug : FitterController
+	, IDragContainer
 {
 	public int team;
 	[Range(0, CountLimit)] public int inputCount;
@@ -73,5 +74,52 @@ public class FitterDebug : FitterController
 	private void Destroy()
 	{
 		_fitter.Free();
+	}
+
+	// ----- ----- ----- ----- -----
+	//     IGameObject
+	// ----- ----- ----- ----- -----
+
+	GameObject IGameObject.GetGO() => gameObject;
+
+	// ----- ----- ----- ----- -----
+	//     IDragContainer
+	// ----- ----- ----- ----- -----
+
+	private IFittable _pickedFittable;
+	private int _pickedId;
+
+	IDraggable IDragContainer.OnPick(Vector3 position)
+	{
+		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+		IFittable picked = _fitter.Get(index);
+		if (picked == null) { return null; }
+
+		_pickedFittable = picked;
+		_pickedId = picked.GetGO().transform.GetSiblingIndex() + 1;
+
+		return picked as IDraggable;
+	}
+
+	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
+	{
+		IFittable draggableFittable = draggable as IFittable;
+		if (_pickedFittable == draggableFittable)
+		{
+			_pickedFittable = null;
+			_pickedId = 0;
+		}
+		return false;
+	}
+
+	void IDragContainer.OnPickEnd(Vector3 position, bool dropResult)
+	{
+		if (dropResult && _pickedId > 0)
+		{
+			_fitter.Remove(_pickedId - 1);
+			_fitter.AdjustPositions();
+		}
+		_pickedFittable = null;
+		_pickedId = 0;
 	}
 }

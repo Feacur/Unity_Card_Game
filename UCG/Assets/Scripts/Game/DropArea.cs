@@ -13,6 +13,15 @@ public class DropArea : FitterController
 	private Fitter _fitter;
 
 	// ----- ----- ----- ----- -----
+	//     MonoBehaviour
+	// ----- ----- ----- ----- -----
+
+	private void Awake()
+	{
+		_fitter = GetComponent<Fitter>();
+	}
+
+	// ----- ----- ----- ----- -----
 	//     IGameObject
 	// ----- ----- ----- ----- -----
 
@@ -22,34 +31,66 @@ public class DropArea : FitterController
 	//     IDragContainer
 	// ----- ----- ----- ----- -----
 
-	IDraggable IDragContainer.OnPick(Ray ray)
+	private IFittable _pickedFittable;
+	private int _pickedId;
+
+	IDraggable IDragContainer.OnPick(Vector3 position)
 	{
-		if (!Physics.Raycast(ray, out RaycastHit hit)) { return null; }
-		return hit.transform.GetComponent<IDraggable>();
+		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+		IFittable picked = _fitter.Get(index);
+		if (picked == null) { return null; }
+
+		_pickedFittable = picked;
+		_pickedId = _pickedFittable.GetGO().transform.GetSiblingIndex() + 1;
+
+		picked.GetGO().transform.parent = null;
+		// _fitter.AdjustPositions();
+
+		return picked as IDraggable;
 	}
 
 	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
 	{
 		if (_team != draggable.GetTeam()) { return false; }
 
-		IFittable draggableFittable = draggable.GetGO().GetComponent<IFittable>();
+		IFittable draggableFittable = draggable as IFittable;
 		if (draggableFittable == null) { return false; }
 
 		int count = _fitter.GetActiveCount();
-		if (HaveSpace(count))
+		if (!HaveSpace(count)) { return false; }
+
+		int index = _fitter.CalculateFittableIndex(count + 1, position.x);
+
+		if (_pickedFittable != draggableFittable)
 		{
 
-			IFittable newElement = _fitter.Add();
-			newElement.SetTeam(_team);
-			newElement.SetContent(draggableFittable.GetContent());
-
-			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
-			newElement.GetGO().transform.SetSiblingIndex(index);
-			_fitter.AdjustPositions();
-
-			return true;
+			var newFittable = _fitter.Add();
+			newFittable.SetTeam(_team);
+			newFittable.SetContent(draggableFittable.GetContent());
+			newFittable.GetGO().transform.SetSiblingIndex(index);
+			
+			_pickedFittable = null;
+			_pickedId = 0;
 		}
-		return false;
+		else
+		{
+			_fitter.EmplaceActive(_pickedFittable, index);
+		}
+
+		_fitter.AdjustPositions();
+
+		return true;
+	}
+
+	void IDragContainer.OnPickEnd(Vector3 position, bool dropResult)
+	{
+		if (!dropResult && _pickedFittable != null && _pickedId > 0)
+		{
+			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
+			_fitter.AdjustPositions();
+		}
+		_pickedFittable = null;
+		_pickedId = 0;
 	}
 
 	// ----- ----- ----- ----- -----
@@ -100,14 +141,5 @@ public class DropArea : FitterController
 			_fitter.Remove(index);
 			_fitter.AdjustPositions();
 		}
-	}
-
-	// ----- ----- ----- ----- -----
-	//     MonoBehaviour
-	// ----- ----- ----- ----- -----
-
-	private void Awake()
-	{
-		_fitter = GetComponent<Fitter>();
 	}
 }

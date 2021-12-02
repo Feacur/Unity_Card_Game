@@ -18,12 +18,6 @@ public interface IFittable : IGameObject
 	void SetContent(string value);
 }
 
-public interface IInteractable : IGameObject
-{
-	bool GetState();
-	void SetState(bool value);
-}
-
 public interface IDraggable : IGameObject
 	, ICompatible
 {
@@ -41,6 +35,7 @@ public interface IHoverable : IGameObject
 
 public interface IDragContainer : IGameObject
 {
-	IDraggable OnPick(Ray ray);
+	IDraggable OnPick(Vector3 position);
 	bool OnDrop(IDraggable draggable, Vector3 position);
+	void OnPickEnd(Vector3 position, bool dropResult);
 }

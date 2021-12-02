@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 public class Fittable : MonoBehaviour
 	, IFittable
-	, IInteractable
 	, IDraggable
 {
 	[SerializeField] private BoxCollider _dimensions;
@@ -37,19 +36,12 @@ public class Fittable : MonoBehaviour
 	void IFittable.SetContent(string text) => _content.text = text;
 
 	// ----- ----- ----- ----- -----
-	//     IInteractable
-	// ----- ----- ----- ----- -----
-
-	bool IInteractable.GetState() => _dimensions.enabled;
-	void IInteractable.SetState(bool state) => _dimensions.enabled = state;
-
-	// ----- ----- ----- ----- -----
 	//     IDraggable
 	// ----- ----- ----- ----- -----
 
 	void IDraggable.OnPick(Vector3 position)
 	{
-
+		gameObject.SetActive(false);
 	}
 
 	void IDraggable.OnUpdate(Vector3 position)
@@ -59,6 +51,6 @@ public class Fittable : MonoBehaviour
 
 	void IDraggable.OnDrop(Vector3 position)
 	{
-
+		gameObject.SetActive(true);
 	}
 }

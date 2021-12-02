@@ -2,18 +2,23 @@ using UnityEngine;
 
 public class GameInput : MonoBehaviour
 {
+	// ----- ----- ----- ----- -----
+	//     Dependencies
+	// ----- ----- ----- ----- -----
+
 	public new Camera camera;
 
 	public Fitter[] suspendables;
 
-	//
+	// ----- ----- ----- ----- -----
+	//     Implementation
+	// ----- ----- ----- ----- -----
 
 	private struct State
 	{
 		public IHoverable hoverable;
-		public IDraggable picked;
-		public int pickedIndex;
-		public Fitter pickedParent;
+		public IDragContainer dragContainerSource;
+		public IDraggable draggable;
 	};
 	private State state;
 
@@ -25,51 +30,42 @@ public class GameInput : MonoBehaviour
 		{
 			if (ReferenceEquals(currentHoverable, state.hoverable))
 			{
-				state.hoverable.OnUpdate(state.picked, position);
+				state.hoverable.OnUpdate(state.draggable, position);
 				return;
 			}
 
-			state.hoverable.OnExit(state.picked, position);
+			state.hoverable.OnExit(state.draggable, position);
 			state.hoverable = null;
 		}
 
 		if (currentHoverable != null)
 		{
 			state.hoverable = currentHoverable;
-			currentHoverable.OnEnter(state.picked, position);
+			currentHoverable.OnEnter(state.draggable, position);
 		}
 	}
 
 	private void UpdatePick(GameObject hovered, Vector3 position)
 	{
 		if (!hovered) { return; }
+		state.dragContainerSource = hovered.GetComponent<IDragContainer>();
 
-		IDraggable draggable = hovered.GetComponent<IDraggable>();
-		if (draggable == null) { return; }
-
-		state.pickedParent = hovered.GetComponentInParent<Fitter>();
-		if (!state.pickedParent) { return; }
-
-		foreach (Fitter it in suspendables)
+		IDraggable draggable = state.dragContainerSource?.OnPick(position);
+		if (draggable != null)
 		{
-			it.SetElementsInteractable(state: false);
-		}
+			state.hoverable?.OnExit(state.draggable, position);
 
-		state.picked = draggable;
-		state.picked.OnPick(position);
-		state.pickedIndex = state.picked.GetGO().transform.GetSiblingIndex();
-		state.picked.GetGO().SetActive(false);
+			state.draggable = draggable;
+			state.draggable.OnPick(position);
 
-		if (state.pickedParent.yankOnSelect)
-		{
-			state.picked.GetGO().transform.parent = null;
+			state.hoverable?.OnEnter(state.draggable, position);
 		}
 	}
 
 	private void UpdateDrag(GameObject hovered, Vector3 position)
 	{
-		if (state.picked == null) { return; }
-		state.picked.OnUpdate(position);
+		if (state.draggable == null) { return; }
+		state.draggable.OnUpdate(position);
 	}
 
 	private void UpdateDrop(GameObject hovered, Vector3 position)
@@ -77,48 +73,29 @@ public class GameInput : MonoBehaviour
 		State state = this.state;
 		this.state = default;
 
-		state.hoverable?.OnExit(state.picked, position);
-
-		if (state.picked == null) { return; }
-		state.picked.OnDrop(position);
-		state.picked.GetGO().SetActive(true);
-
-		if (state.pickedParent.yankOnSelect && (state.hoverable == null || hovered == state.pickedParent.gameObject))
+		bool dropResult = false;
+		if (hovered)
 		{
-			state.pickedParent.EmplaceActive(
-				state.picked.GetGO().GetComponent<Fittable>(),
-				state.hoverable != null
-					? state.pickedParent.CalculateFittableIndex(state.pickedParent.GetActiveCount() + 1, position.x)
-					: state.pickedIndex
-			);
-			state.pickedParent.AdjustPositions();
-			goto finalize;
+			state.hoverable?.OnExit(state.draggable, position);
+
+			IDragContainer hoveredDragContainer = hovered.GetComponent<IDragContainer>();
+			dropResult = hoveredDragContainer?.OnDrop(state.draggable, position) ?? false;
 		}
 
-		if (state.hoverable == null) { goto finalize; }
-
-		IDragContainer dragContainer = hovered.GetComponent<IDragContainer>();
-		if (dragContainer != null && dragContainer.OnDrop(state.picked, position))
-		{
-			state.pickedParent.Remove(state.picked.GetGO().transform.GetSiblingIndex());
-			state.pickedParent.AdjustPositions();
-		}
-
-		finalize:
-		foreach (Fitter it in suspendables)
-		{
-			it.SetElementsInteractable(state: true);
-		}
+		state.draggable?.OnDrop(position);
+		state.dragContainerSource?.OnPickEnd(position, dropResult);
 	}
 
-	// MonoBehaviour
+	// ----- ----- ----- ----- -----
+	//     MonoBehaviour
+	// ----- ----- ----- ----- -----
 
 	private void Update()
 	{
 		Ray inputRay = camera.ScreenPointToRay(Input.mousePosition);
 		Physics.Raycast(inputRay, out RaycastHit hit);
 
-		GameObject hovered = hit.transform ? hit.transform.gameObject : null;
+		GameObject hovered = hit.transform?.gameObject;
 		UpdateHover(hovered, hit.point);
 
 		if (Input.GetMouseButtonDown(0))
