@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class MBTrace : MonoBehaviour
 {
-	// MonoBehaviour
+	// ----- ----- ----- ----- -----
+	//     MonoBehaviour
+	// ----- ----- ----- ----- -----
 
 	private void Awake() => Debug.Log(@$"MBTrace, Awake: {Environment.StackTrace}");
 	private void Start() => Debug.Log(@$"MBTrace, Start: {Environment.StackTrace}");

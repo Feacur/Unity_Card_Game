@@ -609,6 +609,10 @@ PrefabInstance:
       propertyPath: team
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4417406192181007055, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
+      propertyPath: _team
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6217106019919027113, guid: cd4d5d068dc172f40aa9d9a794fc6138, type: 3}
       propertyPath: targetCount
       value: 7

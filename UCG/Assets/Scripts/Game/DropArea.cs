@@ -1,11 +1,16 @@
 using UnityEngine;
 
 public class DropArea : FitterController
+	, IDragContainer
 	, IHoverable
 {
-	public int team;
+	[SerializeField] private int _team;
 
-	private IFittable hoveredFittable;
+	// ----- ----- ----- ----- -----
+	//     Dependencies
+	// ----- ----- ----- ----- -----
+
+	private Fitter _fitter;
 
 	// ----- ----- ----- ----- -----
 	//     IGameObject
@@ -14,85 +19,95 @@ public class DropArea : FitterController
 	GameObject IGameObject.GetGO() => gameObject;
 
 	// ----- ----- ----- ----- -----
-	//     IHoverable
+	//     IDragContainer
 	// ----- ----- ----- ----- -----
 
-	void IHoverable.OnEnter(Vector3 position)
+	IDraggable IDragContainer.OnPick(Ray ray)
 	{
-		Fitter fitter = GetComponent<Fitter>();
-		if (!HaveSpace(fitter.GetActiveCount())) { return; }
-
-		IFittable fittable = fitter.Add();
-		hoveredFittable = fittable;
-
-		foreach (Collider collider in fittable.GetGO().GetComponentsInChildren<Collider>(includeInactive: true))
-		{
-			collider.enabled = false;
-		}
-
-		fittable.GetGO().SetActive(false);
-
-		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
-		fittable.GetGO().transform.SetSiblingIndex(index);
-		fitter.AdjustPositions();
+		if (!Physics.Raycast(ray, out RaycastHit hit)) { return null; }
+		return hit.transform.GetComponent<IDraggable>();
 	}
 
-	void IHoverable.OnUpdate(Vector3 position)
+	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
 	{
-		if (hoveredFittable == null) { return; }
-		Fitter fitter = GetComponent<Fitter>();
-
-		int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
-		hoveredFittable.GetGO().transform.SetSiblingIndex(index);
-		fitter.AdjustPositions();
-	}
-
-	void IHoverable.OnExit(Vector3 position)
-	{
-		if (hoveredFittable == null) { return; }
-		Fitter fitter = GetComponent<Fitter>();
-
-		IFittable fittable = hoveredFittable;
-		hoveredFittable = null;
-
-		foreach (Collider collider in fittable.GetGO().GetComponentsInChildren<Collider>(includeInactive: true))
-		{
-			collider.enabled = true;
-		}
-
-		fittable.GetGO().SetActive(true);
-
-		int index = fittable.GetGO().transform.GetSiblingIndex();
-		fitter.Remove(index);
-		fitter.AdjustPositions();
-	}
-
-	// ----- ----- ----- ----- -----
-	//     Implementation
-	// ----- ----- ----- ----- -----
-
-	public bool OnDrop(IDraggable draggable, Vector3 position)
-	{
-		if (team != draggable.GetTeam()) { return false; }
+		if (_team != draggable.GetTeam()) { return false; }
 
 		IFittable draggableFittable = draggable.GetGO().GetComponent<IFittable>();
 		if (draggableFittable == null) { return false; }
 
-		Fitter fitter = GetComponent<Fitter>();
-		int count = fitter.GetActiveCount();
+		int count = _fitter.GetActiveCount();
 		if (HaveSpace(count))
 		{
 
-			IFittable newElement = fitter.Add();
-			newElement.SetTeam(team);
+			IFittable newElement = _fitter.Add();
+			newElement.SetTeam(_team);
 			newElement.SetContent(draggableFittable.GetContent());
 
-			int index = fitter.CalculateFittableIndex(fitter.GetActiveCount(), position.x);
+			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
 			newElement.GetGO().transform.SetSiblingIndex(index);
-			fitter.AdjustPositions();
+			_fitter.AdjustPositions();
 
 			return true;
 		}
 		return false;
+	}
+
+	// ----- ----- ----- ----- -----
+	//     IHoverable
+	// ----- ----- ----- ----- -----
+
+	private IFittable hoverablePlaceholder;
+
+	void IHoverable.OnEnter(IDraggable draggable, Vector3 position)
+	{
+		if (draggable != null)
+		{
+			if (HaveSpace(_fitter.GetActiveCount()))
+			{
+				hoverablePlaceholder = _fitter.Add();
+
+				hoverablePlaceholder.GetGO().SetActive(false);
+				// (placeholder as IInteractable)?.SetState(false);
+
+				int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+				hoverablePlaceholder.GetGO().transform.SetSiblingIndex(index);
+				_fitter.AdjustPositions();
+			}
+		}
+	}
+
+	void IHoverable.OnUpdate(IDraggable draggable, Vector3 position)
+	{
+		if (hoverablePlaceholder != null)
+		{
+			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+			hoverablePlaceholder.GetGO().transform.SetSiblingIndex(index);
+			_fitter.AdjustPositions();
+		}
+	}
+
+	void IHoverable.OnExit(IDraggable draggable, Vector3 position)
+	{
+		IFittable placeholder = this.hoverablePlaceholder;
+		this.hoverablePlaceholder = null;
+
+		if (placeholder != null)
+		{
+			placeholder.GetGO().SetActive(true);
+			// (placeholder as IInteractable)?.SetState(true);
+
+			int index = placeholder.GetGO().transform.GetSiblingIndex();
+			_fitter.Remove(index);
+			_fitter.AdjustPositions();
+		}
+	}
+
+	// ----- ----- ----- ----- -----
+	//     MonoBehaviour
+	// ----- ----- ----- ----- -----
+
+	private void Awake()
+	{
+		_fitter = GetComponent<Fitter>();
 	}
 }

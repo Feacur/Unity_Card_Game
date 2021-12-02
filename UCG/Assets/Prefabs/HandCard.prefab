@@ -377,9 +377,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b4fa833440e2545a07e378600741fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensions: {fileID: 5345978689231264631}
-  content: {fileID: 6930095359793519948}
-  team: 0
+  _dimensions: {fileID: 5345978689231264631}
+  _content: {fileID: 6930095359793519948}
+  _team: 0
 --- !u!65 &5345978689231264631
 BoxCollider:
   m_ObjectHideFlags: 0

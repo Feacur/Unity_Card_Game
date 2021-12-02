@@ -25,18 +25,18 @@ public class GameInput : MonoBehaviour
 		{
 			if (ReferenceEquals(currentHoverable, state.hoverable))
 			{
-				state.hoverable.OnUpdate(position);
+				state.hoverable.OnUpdate(state.picked, position);
 				return;
 			}
 
-			state.hoverable.OnExit(position);
+			state.hoverable.OnExit(state.picked, position);
 			state.hoverable = null;
 		}
 
 		if (currentHoverable != null)
 		{
 			state.hoverable = currentHoverable;
-			currentHoverable.OnEnter(position);
+			currentHoverable.OnEnter(state.picked, position);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class GameInput : MonoBehaviour
 		State state = this.state;
 		this.state = default;
 
-		state.hoverable?.OnExit(position);
+		state.hoverable?.OnExit(state.picked, position);
 
 		if (state.picked == null) { return; }
 		state.picked.OnDrop(position);
@@ -97,8 +97,8 @@ public class GameInput : MonoBehaviour
 
 		if (state.hoverable == null) { goto finalize; }
 
-		DropArea dropArea = hovered.GetComponent<DropArea>();
-		if (dropArea && dropArea.OnDrop(state.picked, position))
+		IDragContainer dragContainer = hovered.GetComponent<IDragContainer>();
+		if (dragContainer != null && dragContainer.OnDrop(state.picked, position))
 		{
 			state.pickedParent.Remove(state.picked.GetGO().transform.GetSiblingIndex());
 			state.pickedParent.AdjustPositions();
@@ -119,10 +119,7 @@ public class GameInput : MonoBehaviour
 		Physics.Raycast(inputRay, out RaycastHit hit);
 
 		GameObject hovered = hit.transform ? hit.transform.gameObject : null;
-		if (state.picked != null)
-		{
-			UpdateHover(hovered, hit.point);
-		}
+		UpdateHover(hovered, hit.point);
 
 		if (Input.GetMouseButtonDown(0))
 		{

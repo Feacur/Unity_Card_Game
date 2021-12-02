@@ -6,40 +6,54 @@ public class FitterDebug : FitterController
 	[Range(0, CountLimit)] public int inputCount;
 	public bool persistent;
 
+	// ----- ----- ----- ----- -----
+	//     Dependencies
+	// ----- ----- ----- ----- -----
+
+	private Fitter _fitter;
+
+	// ----- ----- ----- ----- -----
+	//     Implementation
+	// ----- ----- ----- ----- -----
+
 	private void SetCount(int targetCount)
 	{
-		Fitter fitter = GetComponent<Fitter>();
-
-		int currentCount = fitter.GetActiveCount();
+		int currentCount = _fitter.GetActiveCount();
 
 		if (currentCount > targetCount)
 		{
 			for (int i = currentCount; i > targetCount; i--)
 			{
-				fitter.Remove(i - 1);
+				_fitter.Remove(i - 1);
 			}
-			fitter.AdjustPositions();
+			_fitter.AdjustPositions();
 		}
 		else if (currentCount < targetCount)
 		{
 			for (int i = currentCount; i < targetCount; i++)
 			{
-				fitter.Add();
+				_fitter.Add();
 			}
-			fitter.AdjustPositions();
+			_fitter.AdjustPositions();
 		}
 	}
 
-	// MonoBehaviour
+	// ----- ----- ----- ----- -----
+	//     MonoBehaviour
+	// ----- ----- ----- ----- -----
+
+	private void Awake()
+	{
+		_fitter = GetComponent<Fitter>();
+	}
 
 	private void Start()
 	{
 		SetCount(CountLimit);
 
-		Fitter fitter = GetComponent<Fitter>();
 		for (int i = 0; i < CountLimit; i++)
 		{
-			IFittable fittable = fitter.Get(i);
+			IFittable fittable = _fitter.Get(i);
 			fittable.SetTeam(team);
 			fittable.SetContent((i + 1).ToString());
 		}
@@ -58,7 +72,6 @@ public class FitterDebug : FitterController
 
 	private void Destroy()
 	{
-		Fitter fitter = GetComponent<Fitter>();
-		fitter.Free();
+		_fitter.Free();
 	}
 }

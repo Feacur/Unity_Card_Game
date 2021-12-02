@@ -11,11 +11,17 @@ public interface ICompatible
 	void SetTeam(int value);
 }
 
-public interface IHoverable : IGameObject
+public interface IFittable : IGameObject
+	, ICompatible
 {
-	void OnEnter(Vector3 position);
-	void OnUpdate(Vector3 position);
-	void OnExit(Vector3 position);
+	string GetContent();
+	void SetContent(string value);
+}
+
+public interface IInteractable : IGameObject
+{
+	bool GetState();
+	void SetState(bool value);
 }
 
 public interface IDraggable : IGameObject
@@ -26,15 +32,15 @@ public interface IDraggable : IGameObject
 	void OnDrop(Vector3 position);
 }
 
-public interface IInteractable : IGameObject
+public interface IHoverable : IGameObject
 {
-	bool GetState();
-	void SetState(bool value);
+	void OnEnter(IDraggable draggable, Vector3 position);
+	void OnUpdate(IDraggable draggable, Vector3 position);
+	void OnExit(IDraggable draggable, Vector3 position);
 }
 
-public interface IFittable : IGameObject
-	, ICompatible
+public interface IDragContainer : IGameObject
 {
-	string GetContent();
-	void SetContent(string value);
+	IDraggable OnPick(Ray ray);
+	bool OnDrop(IDraggable draggable, Vector3 position);
 }

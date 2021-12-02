@@ -6,11 +6,15 @@ public class Fittable : MonoBehaviour
 	, IInteractable
 	, IDraggable
 {
-	[SerializeField] private BoxCollider dimensions;
-	[SerializeField] private Text content;
-	[SerializeField] private int team;
+	[SerializeField] private BoxCollider _dimensions;
+	[SerializeField] private Text _content;
+	[SerializeField] private int _team;
 
-	public Vector3 GetSize() => dimensions.size;
+	// ----- ----- ----- ----- -----
+	//     Implementation
+	// ----- ----- ----- ----- -----
+
+	public Vector3 GetSize() => _dimensions.size;
 
 	// ----- ----- ----- ----- -----
 	//     IGameObject
@@ -22,22 +26,22 @@ public class Fittable : MonoBehaviour
 	//     ICompatible
 	// ----- ----- ----- ----- -----
 
-	int ICompatible.GetTeam() => team;
-	void ICompatible.SetTeam(int value) => team = value;
+	int ICompatible.GetTeam() => _team;
+	void ICompatible.SetTeam(int value) => _team = value;
 
 	// ----- ----- ----- ----- -----
 	//     IFittable
 	// ----- ----- ----- ----- -----
 
-	string IFittable.GetContent() => content.text;
-	void IFittable.SetContent(string text) => content.text = text;
+	string IFittable.GetContent() => _content.text;
+	void IFittable.SetContent(string text) => _content.text = text;
 
 	// ----- ----- ----- ----- -----
 	//     IInteractable
 	// ----- ----- ----- ----- -----
 
-	bool IInteractable.GetState() => dimensions.enabled;
-	void IInteractable.SetState(bool state) => dimensions.enabled = state;
+	bool IInteractable.GetState() => _dimensions.enabled;
+	void IInteractable.SetState(bool state) => _dimensions.enabled = state;
 
 	// ----- ----- ----- ----- -----
 	//     IDraggable
