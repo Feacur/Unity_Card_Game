@@ -8,6 +8,7 @@ public class Fittable : MonoBehaviour
 	[SerializeField] private BoxCollider _dimensions;
 	[SerializeField] private Text _content;
 	[SerializeField] private int _team;
+	[SerializeField] Transform _root;
 
 	// ----- ----- ----- ----- -----
 	//     Implementation
@@ -39,18 +40,27 @@ public class Fittable : MonoBehaviour
 	//     IDraggable
 	// ----- ----- ----- ----- -----
 
-	void IDraggable.OnPick(Vector3 position)
+	void IDraggable.OnPick(Vector3 position, Vector3 viewDirection)
 	{
-		gameObject.SetActive(false);
+		// gameObject.SetActive(false);
+		_root.SetPositionAndRotation(
+			position - viewDirection,
+			Quaternion.identity
+		);
 	}
 
-	void IDraggable.OnUpdate(Vector3 position)
+	void IDraggable.OnUpdate(Vector3 position, Vector3 viewDirection)
 	{
-
+		_root.SetPositionAndRotation(
+			position - viewDirection,
+			Quaternion.identity
+		);
 	}
 
-	void IDraggable.OnDrop(Vector3 position)
+	void IDraggable.OnDrop(Vector3 position, Vector3 viewDirection)
 	{
-		gameObject.SetActive(true);
+		// gameObject.SetActive(true);
+		_root.localPosition = Vector3.zero;
+		_root.localRotation = Quaternion.identity;
 	}
 }

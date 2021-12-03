@@ -52,7 +52,6 @@ public class DropArea : FitterController
 
 		if (_pickedFittable != draggableFittable)
 		{
-
 			var newFittable = _fitter.Add();
 			newFittable.SetTeam(_team);
 			newFittable.SetContent(draggableFittable.GetContent());

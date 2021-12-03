@@ -20,7 +20,7 @@ public class GameInput : MonoBehaviour
 	};
 	private State _state;
 
-	private void UpdateHover(GameObject hovered, Vector3 position)
+	private void UpdateHover(GameObject hovered, Vector3 position, Vector3 viewDirection)
 	{
 		IHoverable currentHoverable = hovered?.GetComponent<IHoverable>();
 
@@ -43,7 +43,7 @@ public class GameInput : MonoBehaviour
 		}
 	}
 
-	private void UpdatePick(GameObject hovered, Vector3 position)
+	private void UpdatePick(GameObject hovered, Vector3 position, Vector3 viewDirection)
 	{
 		if (!hovered) { return; }
 
@@ -55,18 +55,18 @@ public class GameInput : MonoBehaviour
 			_state.hoverable?.OnExit(_state.draggable, position);
 
 			_state.draggable = draggable;
-			_state.draggable.OnPick(position);
+			_state.draggable.OnPick(position, viewDirection);
 
 			_state.hoverable?.OnEnter(_state.draggable, position);
 		}
 	}
 
-	private void UpdateDrag(GameObject hovered, Vector3 position)
+	private void UpdateDrag(GameObject hovered, Vector3 position, Vector3 viewDirection)
 	{
-		_state.draggable?.OnUpdate(position);
+		_state.draggable?.OnUpdate(position, viewDirection);
 	}
 
-	private void UpdateDrop(GameObject hovered, Vector3 position)
+	private void UpdateDrop(GameObject hovered, Vector3 position, Vector3 viewDirection)
 	{
 		State state = this._state;
 		this._state = default;
@@ -80,7 +80,7 @@ public class GameInput : MonoBehaviour
 			dropResult = hoveredDragContainer?.OnDrop(state.draggable, position) ?? false;
 		}
 
-		state.draggable?.OnDrop(position);
+		state.draggable?.OnDrop(position, viewDirection);
 		state.dragContainerSource?.OnPickEnd(position, dropResult);
 	}
 
@@ -94,19 +94,19 @@ public class GameInput : MonoBehaviour
 		Physics.Raycast(inputRay, out RaycastHit hit);
 
 		GameObject hovered = hit.transform?.gameObject;
-		UpdateHover(hovered, hit.point);
+		UpdateHover(hovered, hit.point, inputRay.direction);
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			UpdatePick(hovered, hit.point);
+			UpdatePick(hovered, hit.point, inputRay.direction);
 		}
 		else if (Input.GetMouseButtonUp(0))
 		{
-			UpdateDrop(hovered, hit.point);
+			UpdateDrop(hovered, hit.point, inputRay.direction);
 		}
 		else
 		{
-			UpdateDrag(hovered, hit.point);
+			UpdateDrag(hovered, hit.point, inputRay.direction);
 		}
 	}
 }

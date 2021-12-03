@@ -21,9 +21,9 @@ public interface IFittable : IGameObject
 public interface IDraggable : IGameObject
 	, ICompatible
 {
-	void OnPick(Vector3 position);
-	void OnUpdate(Vector3 position);
-	void OnDrop(Vector3 position);
+	void OnPick(Vector3 position, Vector3 viewDirection);
+	void OnUpdate(Vector3 position, Vector3 viewDirection);
+	void OnDrop(Vector3 position, Vector3 viewDirection);
 }
 
 public interface IHoverable : IGameObject

@@ -301,6 +301,7 @@ MonoBehaviour:
   _dimensions: {fileID: 5345978689231264631}
   _content: {fileID: 8720361117796893021}
   _team: 0
+  _root: {fileID: 3641774413350296299}
 --- !u!65 &5345978689231264631
 BoxCollider:
   m_ObjectHideFlags: 0
