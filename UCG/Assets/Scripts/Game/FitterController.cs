@@ -2,11 +2,37 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Fitter))]
-public class FitterController : MonoBehaviour
+public abstract class FitterController : MonoBehaviour
 {
-	public const int CountLimit = 10;
+	protected const int CountLimit = 10;
 
-	[Range(0, CountLimit)] public int targetLimit;
+	[SerializeField, Range(0, CountLimit)] protected int _targetLimit;
 
-	protected bool HaveSpace(int count) => targetLimit == 0 || count < targetLimit;
+	// ----- ----- ----- ----- -----
+	//     Dependencies (local)
+	// ----- ----- ----- ----- -----
+
+	protected Fitter _fitter;
+
+	// ----- ----- ----- ----- -----
+	//     Implementation
+	// ----- ----- ----- ----- -----
+
+	protected bool HaveSpace(int count) => _targetLimit == 0 || count < _targetLimit;
+
+	// ----- ----- ----- ----- -----
+	//     MonoBehaviour
+	// ----- ----- ----- ----- -----
+
+#if UNITY_EDITOR
+	protected virtual void OnValidate()
+	{
+		if (_targetLimit > CountLimit) { _targetLimit = CountLimit; }
+	}
+#endif
+
+	protected virtual void Awake()
+	{
+		_fitter = GetComponent<Fitter>();
+	}
 }

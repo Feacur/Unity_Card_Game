@@ -3,15 +3,10 @@ using UnityEngine;
 public class FitterDebug : FitterController
 	, IDragContainer
 {
-	public int team;
-	[Range(0, CountLimit)] public int inputCount;
-	public bool persistent;
-
-	// ----- ----- ----- ----- -----
-	//     Dependencies
-	// ----- ----- ----- ----- -----
-
-	private Fitter _fitter;
+	[SerializeField] private int _team;
+	[SerializeField] private bool _pickable;
+	[SerializeField, Range(0, CountLimit)] private int _inputCount;
+	[SerializeField] private bool _persistent;
 
 	// ----- ----- ----- ----- -----
 	//     Implementation
@@ -43,10 +38,13 @@ public class FitterDebug : FitterController
 	//     MonoBehaviour
 	// ----- ----- ----- ----- -----
 
-	private void Awake()
+#if UNITY_EDITOR
+	protected override void OnValidate()
 	{
-		_fitter = GetComponent<Fitter>();
+		base.OnValidate();
+		if (_inputCount > _targetLimit) { _inputCount = _targetLimit; }
 	}
+#endif
 
 	private void Start()
 	{
@@ -55,20 +53,20 @@ public class FitterDebug : FitterController
 		for (int i = 0; i < CountLimit; i++)
 		{
 			IFittable fittable = _fitter.Get(i);
-			fittable.SetTeam(team);
+			fittable.SetTeam(_team);
 			fittable.SetContent((i + 1).ToString());
 		}
 
-		inputCount = Mathf.Min(inputCount, targetLimit);
-		SetCount(inputCount);
+		_inputCount = Mathf.Min(_inputCount, _targetLimit);
+		SetCount(_inputCount);
 
-		this.enabled = persistent;
+		this.enabled = _persistent;
 	}
 
 	private void Update()
 	{
-		inputCount = Mathf.Min(inputCount, targetLimit);
-		SetCount(inputCount);
+		_inputCount = Mathf.Min(_inputCount, _targetLimit);
+		SetCount(_inputCount);
 	}
 
 	private void Destroy()
@@ -91,6 +89,8 @@ public class FitterDebug : FitterController
 
 	IDraggable IDragContainer.OnPick(Vector3 position)
 	{
+		if (!_pickable) { return null; }
+
 		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
 		IFittable picked = _fitter.Get(index);
 		if (picked == null) { return null; }
@@ -103,6 +103,9 @@ public class FitterDebug : FitterController
 
 	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
 	{
+		if (draggable == null) { return false; }
+		if (_team != draggable.GetTeam()) { return false; }
+
 		IFittable draggableFittable = draggable as IFittable;
 		if (_pickedFittable == draggableFittable)
 		{

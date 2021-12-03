@@ -5,21 +5,7 @@ public class DropArea : FitterController
 	, IHoverable
 {
 	[SerializeField] private int _team;
-
-	// ----- ----- ----- ----- -----
-	//     Dependencies
-	// ----- ----- ----- ----- -----
-
-	private Fitter _fitter;
-
-	// ----- ----- ----- ----- -----
-	//     MonoBehaviour
-	// ----- ----- ----- ----- -----
-
-	private void Awake()
-	{
-		_fitter = GetComponent<Fitter>();
-	}
+	[SerializeField] private bool _pickable;
 
 	// ----- ----- ----- ----- -----
 	//     IGameObject
@@ -36,6 +22,8 @@ public class DropArea : FitterController
 
 	IDraggable IDragContainer.OnPick(Vector3 position)
 	{
+		if (!_pickable) { return null; }
+
 		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
 		IFittable picked = _fitter.Get(index);
 		if (picked == null) { return null; }
@@ -51,6 +39,7 @@ public class DropArea : FitterController
 
 	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
 	{
+		if (draggable == null) { return false; }
 		if (_team != draggable.GetTeam()) { return false; }
 
 		IFittable draggableFittable = draggable as IFittable;
@@ -101,7 +90,7 @@ public class DropArea : FitterController
 
 	void IHoverable.OnEnter(IDraggable draggable, Vector3 position)
 	{
-		if (draggable != null)
+		if (draggable != null && _team == draggable.GetTeam())
 		{
 			if (HaveSpace(_fitter.GetActiveCount()))
 			{
