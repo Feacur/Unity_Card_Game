@@ -32,7 +32,7 @@ public class DropArea : FitterController
 		_pickedId = _pickedFittable.GetGO().transform.GetSiblingIndex() + 1;
 
 		picked.GetGO().transform.parent = null;
-		// _fitter.AdjustPositions();
+		_fitter.AdjustPositions();
 
 		return picked as IDraggable;
 	}
