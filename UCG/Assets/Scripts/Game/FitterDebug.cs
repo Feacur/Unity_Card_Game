@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class FitterDebug : FitterController
 	, IDragContainer
+	, IHoverable
 {
 	[SerializeField] private int _team;
 	[SerializeField] private bool _pickable;
+	[SerializeField] private bool _previewable;
 	[SerializeField, Range(0, CountLimit)] private int _inputCount;
 	[SerializeField] private bool _persistent;
 
@@ -87,11 +89,11 @@ public class FitterDebug : FitterController
 	private IFittable _pickedFittable;
 	private int _pickedId;
 
-	IDraggable IDragContainer.OnPick(Vector3 position)
+	IDraggable IDragContainer.OnPick(GameInputData input)
 	{
 		if (!_pickable) { return null; }
 
-		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 		IFittable picked = _fitter.Get(index);
 		if (picked == null) { return null; }
 
@@ -101,7 +103,7 @@ public class FitterDebug : FitterController
 		return picked as IDraggable;
 	}
 
-	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
+	bool IDragContainer.OnDrop(IDraggable draggable, GameInputData input)
 	{
 		if (draggable == null) { return false; }
 		if (_team != draggable.GetTeam()) { return false; }
@@ -115,7 +117,7 @@ public class FitterDebug : FitterController
 		return false;
 	}
 
-	void IDragContainer.OnPickEnd(Vector3 position, bool dropResult)
+	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
 	{
 		if (dropResult && _pickedId > 0)
 		{
@@ -124,5 +126,47 @@ public class FitterDebug : FitterController
 		}
 		_pickedFittable = null;
 		_pickedId = 0;
+	}
+
+	// ----- ----- ----- ----- -----
+	//     IHoverable
+	// ----- ----- ----- ----- -----
+
+	private IFittable hoveredFittable;
+
+	void IHoverable.OnEnter(IDraggable draggable, GameInputData input)
+	{
+		if (_previewable && draggable == null)
+		{
+			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
+			hoveredFittable = _fitter.Get(index);
+
+			hoveredFittable?.Show(input);
+		}
+	}
+
+	void IHoverable.OnUpdate(IDraggable draggable, GameInputData input)
+	{
+		if (_previewable && draggable == null)
+		{
+			hoveredFittable?.Hide(input);
+
+			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
+			hoveredFittable = _fitter.Get(index);
+
+			hoveredFittable?.Show(input);
+
+		}
+	}
+
+	void IHoverable.OnExit(IDraggable draggable, GameInputData input)
+	{
+		if (_previewable)
+		{
+			IFittable hoveredFittable = this.hoveredFittable;
+			this.hoveredFittable = null;
+
+			hoveredFittable?.Hide(input);
+		}
 	}
 }

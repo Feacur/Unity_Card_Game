@@ -1,5 +1,12 @@
 using UnityEngine;
 
+public struct GameInputData
+{
+	public Vector3 origin;
+	public Vector3 direction;
+	public Vector3 target;
+}
+
 public interface IGameObject
 {
 	GameObject GetGO();
@@ -11,8 +18,15 @@ public interface ICompatible
 	void SetTeam(int value);
 }
 
+public interface IPreviewable
+{
+	void Show(GameInputData input);
+	void Hide(GameInputData input);
+}
+
 public interface IFittable : IGameObject
 	, ICompatible
+	, IPreviewable
 {
 	string GetContent();
 	void SetContent(string value);
@@ -21,21 +35,21 @@ public interface IFittable : IGameObject
 public interface IDraggable : IGameObject
 	, ICompatible
 {
-	void OnPick(Vector3 position, Vector3 viewDirection);
-	void OnUpdate(Vector3 position, Vector3 viewDirection);
-	void OnDrop(Vector3 position, Vector3 viewDirection);
+	void OnPick(GameInputData input);
+	void OnUpdate(GameInputData input);
+	void OnDrop(GameInputData input);
 }
 
 public interface IHoverable : IGameObject
 {
-	void OnEnter(IDraggable draggable, Vector3 position);
-	void OnUpdate(IDraggable draggable, Vector3 position);
-	void OnExit(IDraggable draggable, Vector3 position);
+	void OnEnter(IDraggable draggable, GameInputData input);
+	void OnUpdate(IDraggable draggable, GameInputData input);
+	void OnExit(IDraggable draggable, GameInputData input);
 }
 
 public interface IDragContainer : IGameObject
 {
-	IDraggable OnPick(Vector3 position);
-	bool OnDrop(IDraggable draggable, Vector3 position);
-	void OnPickEnd(Vector3 position, bool dropResult);
+	IDraggable OnPick(GameInputData input);
+	bool OnDrop(IDraggable draggable, GameInputData input);
+	void OnPickEnd(GameInputData input, bool dropResult);
 }

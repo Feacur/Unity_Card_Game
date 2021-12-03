@@ -33,6 +33,25 @@ public class Fittable : MonoBehaviour
 	void ICompatible.SetTeam(int value) => _team = value;
 
 	// ----- ----- ----- ----- -----
+	//     IPreviewable
+	// ----- ----- ----- ----- -----
+
+	void IPreviewable.Show(GameInputData input)
+	{
+		Vector3 offsetDirection = transform.position - input.origin; offsetDirection.Normalize();
+		_root.SetPositionAndRotation(
+			transform.position + Vector3.forward * 0.5f - offsetDirection * 2,
+			Quaternion.identity
+		);
+	}
+
+	void IPreviewable.Hide(GameInputData input)
+	{
+		_root.localPosition = Vector3.zero;
+		_root.localRotation = Quaternion.identity;
+	}
+
+	// ----- ----- ----- ----- -----
 	//     IFittable
 	// ----- ----- ----- ----- -----
 
@@ -43,15 +62,15 @@ public class Fittable : MonoBehaviour
 	//     IDraggable
 	// ----- ----- ----- ----- -----
 
-	void IDraggable.OnPick(Vector3 position, Vector3 viewDirection)
+	void IDraggable.OnPick(GameInputData input)
 	{
-		position -= viewDirection;
+		Vector3 position = input.target - input.direction;
 		_root.SetPositionAndRotation(position, Quaternion.identity);
 	}
 
-	void IDraggable.OnUpdate(Vector3 position, Vector3 viewDirection)
+	void IDraggable.OnUpdate(GameInputData input)
 	{
-		position -= viewDirection;
+		Vector3 position = input.target - input.direction;
 
 		Vector3 move = position - _root.position; move.y = 0;
 		float moveMagnitude = move.magnitude;
@@ -68,7 +87,7 @@ public class Fittable : MonoBehaviour
 		_root.SetPositionAndRotation(position, rotation);
 	}
 
-	void IDraggable.OnDrop(Vector3 position, Vector3 viewDirection)
+	void IDraggable.OnDrop(GameInputData input)
 	{
 		_root.localPosition = Vector3.zero;
 		_root.localRotation = Quaternion.identity;

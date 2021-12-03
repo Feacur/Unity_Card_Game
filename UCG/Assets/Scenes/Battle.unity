@@ -516,6 +516,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3662545367381567728, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
+      propertyPath: _previewable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3662545367381567728, guid: 7882ff5d0b2994448a16e9550b1661c0, type: 3}
       propertyPath: _targetLimit
       value: 10
       objectReference: {fileID: 0}

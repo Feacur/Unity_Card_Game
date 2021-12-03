@@ -20,7 +20,7 @@ public class GameInput : MonoBehaviour
 	};
 	private State _state;
 
-	private void UpdateHover(GameObject hovered, Vector3 position, Vector3 viewDirection)
+	private void UpdateHover(GameObject hovered, GameInputData input)
 	{
 		IHoverable currentHoverable = hovered?.GetComponent<IHoverable>();
 
@@ -28,60 +28,60 @@ public class GameInput : MonoBehaviour
 		{
 			if (ReferenceEquals(currentHoverable, _state.hoverable))
 			{
-				_state.hoverable.OnUpdate(_state.draggable, position);
+				_state.hoverable.OnUpdate(_state.draggable, input);
 				return;
 			}
 
-			_state.hoverable.OnExit(_state.draggable, position);
+			_state.hoverable.OnExit(_state.draggable, input);
 			_state.hoverable = null;
 		}
 
 		if (currentHoverable != null)
 		{
 			_state.hoverable = currentHoverable;
-			currentHoverable.OnEnter(_state.draggable, position);
+			currentHoverable.OnEnter(_state.draggable, input);
 		}
 	}
 
-	private void UpdatePick(GameObject hovered, Vector3 position, Vector3 viewDirection)
+	private void UpdatePick(GameObject hovered, GameInputData input)
 	{
 		if (!hovered) { return; }
 
 		_state.dragContainerSource = hovered.GetComponent<IDragContainer>();
-		IDraggable draggable = _state.dragContainerSource?.OnPick(position);
+		IDraggable draggable = _state.dragContainerSource?.OnPick(input);
 
 		if (draggable != null)
 		{
-			_state.hoverable?.OnExit(_state.draggable, position);
+			_state.hoverable?.OnExit(_state.draggable, input);
 
 			_state.draggable = draggable;
-			_state.draggable.OnPick(position, viewDirection);
+			_state.draggable.OnPick(input);
 
-			_state.hoverable?.OnEnter(_state.draggable, position);
+			_state.hoverable?.OnEnter(_state.draggable, input);
 		}
 	}
 
-	private void UpdateDrag(GameObject hovered, Vector3 position, Vector3 viewDirection)
+	private void UpdateDrag(GameObject hovered, GameInputData input)
 	{
-		_state.draggable?.OnUpdate(position, viewDirection);
+		_state.draggable?.OnUpdate(input);
 	}
 
-	private void UpdateDrop(GameObject hovered, Vector3 position, Vector3 viewDirection)
+	private void UpdateDrop(GameObject hovered, GameInputData input)
 	{
 		State state = this._state;
 		this._state = default;
 
-		state.hoverable?.OnExit(state.draggable, position);
+		state.hoverable?.OnExit(state.draggable, input);
 
 		bool dropResult = false;
 		if (hovered)
 		{
 			IDragContainer hoveredDragContainer = hovered.GetComponent<IDragContainer>();
-			dropResult = hoveredDragContainer?.OnDrop(state.draggable, position) ?? false;
+			dropResult = hoveredDragContainer?.OnDrop(state.draggable, input) ?? false;
 		}
 
-		state.draggable?.OnDrop(position, viewDirection);
-		state.dragContainerSource?.OnPickEnd(position, dropResult);
+		state.draggable?.OnDrop(input);
+		state.dragContainerSource?.OnPickEnd(input, dropResult);
 	}
 
 	// ----- ----- ----- ----- -----
@@ -90,23 +90,29 @@ public class GameInput : MonoBehaviour
 
 	private void Update()
 	{
-		Ray inputRay = _camera.ScreenPointToRay(Input.mousePosition);
-		Physics.Raycast(inputRay, out RaycastHit hit);
+		Ray worldRay = _camera.ScreenPointToRay(Input.mousePosition);
+		Physics.Raycast(worldRay, out RaycastHit hit);
+
+		GameInputData input = new GameInputData {
+			origin = _camera.transform.position,
+			direction = worldRay.direction,
+			target = hit.point,
+		};
 
 		GameObject hovered = hit.transform?.gameObject;
-		UpdateHover(hovered, hit.point, inputRay.direction);
+		UpdateHover(hovered, input);
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			UpdatePick(hovered, hit.point, inputRay.direction);
+			UpdatePick(hovered, input);
 		}
 		else if (Input.GetMouseButtonUp(0))
 		{
-			UpdateDrop(hovered, hit.point, inputRay.direction);
+			UpdateDrop(hovered, input);
 		}
 		else
 		{
-			UpdateDrag(hovered, hit.point, inputRay.direction);
+			UpdateDrag(hovered, input);
 		}
 	}
 }

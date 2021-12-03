@@ -20,11 +20,11 @@ public class DropArea : FitterController
 	private IFittable _pickedFittable;
 	private int _pickedId;
 
-	IDraggable IDragContainer.OnPick(Vector3 position)
+	IDraggable IDragContainer.OnPick(GameInputData input)
 	{
 		if (!_pickable) { return null; }
 
-		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 		IFittable picked = _fitter.Get(index);
 		if (picked == null) { return null; }
 
@@ -37,7 +37,7 @@ public class DropArea : FitterController
 		return picked as IDraggable;
 	}
 
-	bool IDragContainer.OnDrop(IDraggable draggable, Vector3 position)
+	bool IDragContainer.OnDrop(IDraggable draggable, GameInputData input)
 	{
 		if (draggable == null) { return false; }
 		if (_team != draggable.GetTeam()) { return false; }
@@ -48,7 +48,7 @@ public class DropArea : FitterController
 		int count = _fitter.GetActiveCount();
 		if (!HaveSpace(count)) { return false; }
 
-		int index = _fitter.CalculateFittableIndex(count + 1, position.x);
+		int index = _fitter.CalculateFittableIndex(count + 1, input.target.x);
 
 		if (_pickedFittable != draggableFittable)
 		{
@@ -70,7 +70,7 @@ public class DropArea : FitterController
 		return true;
 	}
 
-	void IDragContainer.OnPickEnd(Vector3 position, bool dropResult)
+	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
 	{
 		if (!dropResult && _pickedFittable != null && _pickedId > 0)
 		{
@@ -87,7 +87,7 @@ public class DropArea : FitterController
 
 	private IFittable hoverablePlaceholder;
 
-	void IHoverable.OnEnter(IDraggable draggable, Vector3 position)
+	void IHoverable.OnEnter(IDraggable draggable, GameInputData input)
 	{
 		if (draggable != null && _team == draggable.GetTeam())
 		{
@@ -98,34 +98,34 @@ public class DropArea : FitterController
 				hoverablePlaceholder.GetGO().SetActive(false);
 				// (placeholder as IInteractable)?.SetState(false);
 
-				int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+				int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 				hoverablePlaceholder.GetGO().transform.SetSiblingIndex(index);
 				_fitter.AdjustPositions();
 			}
 		}
 	}
 
-	void IHoverable.OnUpdate(IDraggable draggable, Vector3 position)
+	void IHoverable.OnUpdate(IDraggable draggable, GameInputData input)
 	{
 		if (hoverablePlaceholder != null)
 		{
-			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), position.x);
+			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 			hoverablePlaceholder.GetGO().transform.SetSiblingIndex(index);
 			_fitter.AdjustPositions();
 		}
 	}
 
-	void IHoverable.OnExit(IDraggable draggable, Vector3 position)
+	void IHoverable.OnExit(IDraggable draggable, GameInputData input)
 	{
-		IFittable placeholder = this.hoverablePlaceholder;
+		IFittable hoverablePlaceholder = this.hoverablePlaceholder;
 		this.hoverablePlaceholder = null;
 
-		if (placeholder != null)
+		if (hoverablePlaceholder != null)
 		{
-			placeholder.GetGO().SetActive(true);
+			hoverablePlaceholder.GetGO().SetActive(true);
 			// (placeholder as IInteractable)?.SetState(true);
 
-			int index = placeholder.GetGO().transform.GetSiblingIndex();
+			int index = hoverablePlaceholder.GetGO().transform.GetSiblingIndex();
 			_fitter.Remove(index);
 			_fitter.AdjustPositions();
 		}
