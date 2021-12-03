@@ -381,6 +381,9 @@ MonoBehaviour:
   _content: {fileID: 6930095359793519948}
   _team: 0
   _root: {fileID: 3894588154492236671}
+  _rotationLimit: 20
+  _rotationMagnitude: 90
+  _rotationSpeed: 16
 --- !u!65 &5345978689231264631
 BoxCollider:
   m_ObjectHideFlags: 0

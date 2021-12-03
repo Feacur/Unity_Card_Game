@@ -9,6 +9,9 @@ public class Fittable : MonoBehaviour
 	[SerializeField] private Text _content;
 	[SerializeField] private int _team;
 	[SerializeField] Transform _root;
+	[SerializeField] float _rotationLimit = 20;
+	[SerializeField] float _rotationMagnitude = 360;
+	[SerializeField] float _rotationSpeed = 16;
 
 	// ----- ----- ----- ----- -----
 	//     Implementation
@@ -42,24 +45,31 @@ public class Fittable : MonoBehaviour
 
 	void IDraggable.OnPick(Vector3 position, Vector3 viewDirection)
 	{
-		// gameObject.SetActive(false);
-		_root.SetPositionAndRotation(
-			position - viewDirection,
-			Quaternion.identity
-		);
+		position -= viewDirection;
+		_root.SetPositionAndRotation(position, Quaternion.identity);
 	}
 
 	void IDraggable.OnUpdate(Vector3 position, Vector3 viewDirection)
 	{
-		_root.SetPositionAndRotation(
-			position - viewDirection,
-			Quaternion.identity
-		);
+		position -= viewDirection;
+
+		Vector3 move = position - _root.position; move.y = 0;
+		float moveMagnitude = move.magnitude;
+
+		Quaternion targetRotation = Quaternion.identity;
+		if (moveMagnitude > 0.01f)
+		{
+			float angle = Mathf.Min(moveMagnitude * _rotationMagnitude, _rotationLimit);
+			Vector3 tangent = Vector3.Cross(move, Vector3.down); tangent.Normalize();
+			targetRotation = Quaternion.AngleAxis(angle, tangent);
+		}
+
+		Quaternion rotation = Quaternion.Lerp(_root.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
+		_root.SetPositionAndRotation(position, rotation);
 	}
 
 	void IDraggable.OnDrop(Vector3 position, Vector3 viewDirection)
 	{
-		// gameObject.SetActive(true);
 		_root.localPosition = Vector3.zero;
 		_root.localRotation = Quaternion.identity;
 	}
