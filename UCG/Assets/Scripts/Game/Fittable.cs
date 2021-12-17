@@ -55,6 +55,9 @@ public class Fittable : MonoBehaviour
 	//     IFittable
 	// ----- ----- ----- ----- -----
 
+	int IFittable.GetPosition() => transform.GetSiblingIndex();
+	void IFittable.SetPosition(int index) => transform.SetSiblingIndex(index);
+
 	string IFittable.GetContent() => _content.text;
 	void IFittable.SetContent(string text) => _content.text = text;
 

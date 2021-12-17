@@ -98,7 +98,7 @@ public class FitterDebug : FitterController
 		if (picked == null) { return null; }
 
 		_pickedFittable = picked;
-		_pickedId = picked.GetGO().transform.GetSiblingIndex() + 1;
+		_pickedId = picked.GetPosition() + 1;
 
 		return picked as IDraggable;
 	}

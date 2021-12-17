@@ -51,9 +51,8 @@ public class Fitter : MonoBehaviour
 
 	public void EmplaceActive(IFittable fittable, int index)
 	{
-		Transform fittableTransform = fittable.GetGO().transform;
-		fittableTransform.SetParent(activeRoot, worldPositionStays: false);
-		fittableTransform.SetSiblingIndex(index);
+		fittable.GetGO().transform.SetParent(activeRoot, worldPositionStays: false);
+		fittable.SetPosition(index);
 	}
 
 	public void EmplacePooled(IFittable fittable)

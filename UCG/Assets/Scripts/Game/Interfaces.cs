@@ -28,6 +28,9 @@ public interface IFittable : IGameObject
 	, ICompatible
 	, IPreviewable
 {
+	int GetPosition();
+	void SetPosition(int index);
+
 	string GetContent();
 	void SetContent(string value);
 }
