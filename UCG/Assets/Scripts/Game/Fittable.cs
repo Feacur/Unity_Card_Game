@@ -24,6 +24,7 @@ public class Fittable : MonoBehaviour
 	// ----- ----- ----- ----- -----
 
 	GameObject IGameObject.GetGO() => gameObject;
+	Vector3 IGameObject.GetVisiblePosition() => _root.position;
 
 	// ----- ----- ----- ----- -----
 	//     ICompatible

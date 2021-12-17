@@ -12,6 +12,7 @@ public class DropArea : FitterController
 	// ----- ----- ----- ----- -----
 
 	GameObject IGameObject.GetGO() => gameObject;
+	Vector3 IGameObject.GetVisiblePosition() => transform.position;
 
 	// ----- ----- ----- ----- -----
 	//     IDragContainer
@@ -32,7 +33,7 @@ public class DropArea : FitterController
 		_pickedFittable = picked;
 		_pickedId = _pickedFittable.GetPosition() + 1;
 
-		picked.GetGO().transform.parent = null;
+		picked.GetGO().transform.SetParent(null, worldPositionStays: true);
 		_fitter.AnimatePositions();
 
 		return picked as IDraggable;
@@ -57,13 +58,16 @@ public class DropArea : FitterController
 			newFittable.SetTeam(_team);
 			newFittable.SetContent(draggableFittable.GetContent());
 			newFittable.SetPosition(index);
-			
+			newFittable.GetGO().transform.position = draggable.GetVisiblePosition();
+
 			_pickedFittable = null;
 			_pickedId = 0;
 		}
 		else
 		{
+			Vector3 position = draggable.GetVisiblePosition();
 			_fitter.EmplaceActive(_pickedFittable, index);
+			_pickedFittable.GetGO().transform.position = position;
 		}
 
 		_fitter.AnimatePositions();
@@ -71,11 +75,12 @@ public class DropArea : FitterController
 		return true;
 	}
 
-	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
+	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult, Vector3 visiblePosition)
 	{
 		if (!dropResult && _pickedFittable != null && _pickedId > 0)
 		{
 			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
+			_pickedFittable.GetGO().transform.position = visiblePosition;
 			_fitter.AnimatePositions();
 		}
 		_pickedFittable = null;

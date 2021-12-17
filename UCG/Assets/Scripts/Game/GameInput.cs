@@ -71,6 +71,7 @@ public class GameInput : MonoBehaviour
 		State state = this._state;
 		this._state = default;
 
+		Vector3 visiblePosition = state.draggable?.GetVisiblePosition() ?? Vector3.zero;
 		state.hoverable?.OnExit(state.draggable, input);
 
 		bool dropResult = false;
@@ -81,7 +82,7 @@ public class GameInput : MonoBehaviour
 		}
 
 		state.draggable?.OnDrop(input);
-		state.dragContainerSource?.OnPickEnd(input, dropResult);
+		state.dragContainerSource?.OnPickEnd(input, dropResult, visiblePosition);
 	}
 
 	// ----- ----- ----- ----- -----

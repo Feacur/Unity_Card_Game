@@ -10,6 +10,7 @@ public struct GameInputData
 public interface IGameObject
 {
 	GameObject GetGO();
+	Vector3 GetVisiblePosition();
 }
 
 public interface ICompatible
@@ -54,5 +55,5 @@ public interface IDragContainer : IGameObject
 {
 	IDraggable OnPick(GameInputData input);
 	bool OnDrop(IDraggable draggable, GameInputData input);
-	void OnPickEnd(GameInputData input, bool dropResult);
+	void OnPickEnd(GameInputData input, bool dropResult, Vector3 visiblePosition);
 }

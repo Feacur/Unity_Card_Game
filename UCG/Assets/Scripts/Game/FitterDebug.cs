@@ -81,6 +81,7 @@ public class FitterDebug : FitterController
 	// ----- ----- ----- ----- -----
 
 	GameObject IGameObject.GetGO() => gameObject;
+	Vector3 IGameObject.GetVisiblePosition() => transform.position;
 
 	// ----- ----- ----- ----- -----
 	//     IDragContainer
@@ -117,15 +118,22 @@ public class FitterDebug : FitterController
 		return false;
 	}
 
-	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
+	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult, Vector3 visiblePosition)
 	{
+		if (_pickedFittable != null)
+		{
+			_pickedFittable.GetGO().transform.position = visiblePosition;
+		}
+
 		if (dropResult && _pickedId > 0)
 		{
 			_fitter.Remove(_pickedId - 1);
-			_fitter.AnimatePositions();
 		}
+
 		_pickedFittable = null;
 		_pickedId = 0;
+
+		_fitter.AnimatePositions();
 	}
 
 	// ----- ----- ----- ----- -----
