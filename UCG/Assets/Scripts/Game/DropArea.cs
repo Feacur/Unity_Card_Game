@@ -27,13 +27,13 @@ public class DropArea : FitterController
 		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 		IFittable picked = _fitter.Get(index);
 		if (picked == null) { return null; }
-		if (picked !is IDraggable) { return null; }
+		if (!(picked is IDraggable)) { return null; }
 
 		_pickedFittable = picked;
 		_pickedId = _pickedFittable.GetPosition() + 1;
 
 		picked.GetGO().transform.parent = null;
-		_fitter.AdjustPositions();
+		_fitter.AnimatePositions();
 
 		return picked as IDraggable;
 	}
@@ -66,7 +66,7 @@ public class DropArea : FitterController
 			_fitter.EmplaceActive(_pickedFittable, index);
 		}
 
-		_fitter.AdjustPositions();
+		_fitter.AnimatePositions();
 
 		return true;
 	}
@@ -76,7 +76,7 @@ public class DropArea : FitterController
 		if (!dropResult && _pickedFittable != null && _pickedId > 0)
 		{
 			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
-			_fitter.AdjustPositions();
+			_fitter.AnimatePositions();
 		}
 		_pickedFittable = null;
 		_pickedId = 0;
@@ -101,7 +101,7 @@ public class DropArea : FitterController
 
 				int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 				_hoveredPlaceholder.SetPosition(index);
-				_fitter.AdjustPositions();
+				_fitter.AnimatePositions();
 			}
 		}
 	}
@@ -114,7 +114,7 @@ public class DropArea : FitterController
 			if (_hoveredPlaceholder.GetPosition() != index)
 			{
 				_hoveredPlaceholder.SetPosition(index);
-				_fitter.AdjustPositions();
+				_fitter.AnimatePositions();
 			}
 		}
 	}
@@ -131,7 +131,7 @@ public class DropArea : FitterController
 
 			int index = hoverablePlaceholder.GetPosition();
 			_fitter.Remove(index);
-			_fitter.AdjustPositions();
+			_fitter.AnimatePositions();
 		}
 	}
 }

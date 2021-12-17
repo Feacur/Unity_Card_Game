@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Fitter : MonoBehaviour
@@ -7,6 +9,7 @@ public class Fitter : MonoBehaviour
 	[SerializeField] private Fittable elementPrefab;
 	[SerializeField] private Transform activeRoot;
 	[SerializeField] private Transform pooledRoot;
+	[SerializeField] private float _animationSpeed = 10;
 
 	public Vector3 rotation;
 	[Range(0, 1)] public float separationFraction = 1;
@@ -133,15 +136,61 @@ public class Fitter : MonoBehaviour
 	//     Animation
 	// ----- ----- ----- ----- -----
 
-	public void AdjustPositions()
+	private Coroutine _animatePositionsCoroutine;
+	private List<Vector3> _animationFrom = new List<Vector3>();
+
+	public void AnimatePositions()
 	{
+		if (_animatePositionsCoroutine != null)
+		{
+			StopCoroutine(_animatePositionsCoroutine);
+		}
+		_animatePositionsCoroutine = StartCoroutine(AnimatePositionsCoroutine());
+	}
+	
+	private IEnumerator AnimatePositionsCoroutine()
+	{
+		yield return null;
+
 		int count = GetActiveCount();
+
+		_animationFrom.Clear();
+		for (int i = 0; i < count; i++)
+		{
+			Transform childTransform = activeRoot.GetChild(i);
+			_animationFrom.Add(childTransform.localPosition);
+		}
+
 		CalculateMetrics(count, out float separation, out float offset);
+
+		for (int i = 0; i < count; i++)
+		{
+			Transform childTransform = activeRoot.GetChild(i);
+			childTransform.localRotation = Quaternion.Euler(rotation);
+		}
+
+		float animationDuration = 0.25f;
+		for (float time = 0; time < animationDuration; time += Time.deltaTime)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				Transform childTransform = activeRoot.GetChild(i);
+				childTransform.localPosition = Vector3.Lerp(
+					_animationFrom[i],
+					new Vector3(offset + i * separation, 0, 0),
+					Easing.SmoothStep(Mathf.Min(time / animationDuration, 1))
+				);
+			}
+			yield return null;
+		}
+
+		_animationFrom.Clear();
 		for (int i = 0; i < count; i++)
 		{
 			Transform childTransform = activeRoot.GetChild(i);
 			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
-			childTransform.localRotation = Quaternion.Euler(rotation);
 		}
+
+		_animatePositionsCoroutine = null;
 	}
 }
