@@ -97,9 +97,12 @@ public class FitterDebug : FitterController
 		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 		IFittable picked = _fitter.Get(index);
 		if (picked == null) { return null; }
+		if (!(picked is IDraggable)) { return null; }
 
 		_pickedFittable = picked;
 		_pickedId = picked.GetPosition() + 1;
+
+		picked.GetGO().transform.SetParent(null, worldPositionStays: true);
 
 		return picked as IDraggable;
 	}
@@ -120,11 +123,10 @@ public class FitterDebug : FitterController
 
 	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
 	{
-		if (dropResult && _pickedId > 0)
+		if (!dropResult && _pickedFittable != null && _pickedId > 0)
 		{
-			_fitter.Remove(_pickedId - 1);
+			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
 		}
-
 		_pickedFittable = null;
 		_pickedId = 0;
 

@@ -52,24 +52,7 @@ public class DropArea : FitterController
 
 		int index = _fitter.CalculateFittableIndex(count + 1, input.target.x);
 
-		if (_pickedFittable != draggableFittable)
-		{
-			var newFittable = _fitter.Add();
-			newFittable.SetTeam(_team);
-			newFittable.SetContent(draggableFittable.GetContent());
-			newFittable.SetPosition(index);
-			newFittable.GetGO().transform.position = draggable.GetVisiblePosition();
-
-			_pickedFittable = null;
-			_pickedId = 0;
-		}
-		else
-		{
-			Vector3 position = draggable.GetVisiblePosition();
-			_fitter.EmplaceActive(_pickedFittable, index);
-			_pickedFittable.GetGO().transform.position = position;
-		}
-
+		_fitter.EmplaceActive(draggableFittable, index);
 		_fitter.AnimatePositions();
 
 		return true;
@@ -80,10 +63,11 @@ public class DropArea : FitterController
 		if (!dropResult && _pickedFittable != null && _pickedId > 0)
 		{
 			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
-			_fitter.AnimatePositions();
 		}
 		_pickedFittable = null;
 		_pickedId = 0;
+
+		_fitter.AnimatePositions();
 	}
 
 	// ----- ----- ----- ----- -----
