@@ -24,7 +24,6 @@ public class Fittable : MonoBehaviour
 	// ----- ----- ----- ----- -----
 
 	GameObject IGameObject.GetGO() => gameObject;
-	Vector3 IGameObject.GetVisiblePosition() => transform.position;
 
 	// ----- ----- ----- ----- -----
 	//     ICompatible
@@ -59,7 +58,6 @@ public class Fittable : MonoBehaviour
 	int IFittable.GetPosition() => transform.GetSiblingIndex();
 	void IFittable.SetPosition(int index) => transform.SetSiblingIndex(index);
 
-	string IFittable.GetContent() => _content.text;
 	void IFittable.SetContent(string text) => _content.text = text;
 
 	// ----- ----- ----- ----- -----

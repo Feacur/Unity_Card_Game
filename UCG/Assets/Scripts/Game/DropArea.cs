@@ -12,7 +12,6 @@ public class DropArea : FitterController
 	// ----- ----- ----- ----- -----
 
 	GameObject IGameObject.GetGO() => gameObject;
-	Vector3 IGameObject.GetVisiblePosition() => transform.position;
 
 	// ----- ----- ----- ----- -----
 	//     IDragContainer

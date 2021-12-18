@@ -10,7 +10,6 @@ public struct GameInputData
 public interface IGameObject
 {
 	GameObject GetGO();
-	Vector3 GetVisiblePosition();
 }
 
 public interface ICompatible
@@ -32,7 +31,6 @@ public interface IFittable : IGameObject
 	int GetPosition();
 	void SetPosition(int index);
 
-	string GetContent();
 	void SetContent(string value);
 }
 
