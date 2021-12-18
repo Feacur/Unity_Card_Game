@@ -5,7 +5,8 @@ public class DropArea : FitterController
 	, IHoverable
 {
 	[SerializeField] private int _team;
-	[SerializeField] private bool _pickable;
+	[SerializeField] private bool _isDragSource;
+	[SerializeField] private bool _isDragTarget;
 
 	// ----- ----- ----- ----- -----
 	//     IGameObject
@@ -22,7 +23,7 @@ public class DropArea : FitterController
 
 	IDraggable IDragContainer.OnPick(GameInputData input)
 	{
-		if (!_pickable) { return null; }
+		if (!_isDragSource) { return null; }
 
 		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 		IFittable picked = _fitter.Get(index);
@@ -33,7 +34,6 @@ public class DropArea : FitterController
 		_pickedId = _pickedFittable.GetPosition() + 1;
 
 		picked.GetGO().transform.SetParent(null, worldPositionStays: true);
-		_fitter.AnimatePositions();
 
 		return picked as IDraggable;
 	}
@@ -46,15 +46,20 @@ public class DropArea : FitterController
 		IFittable draggableFittable = draggable as IFittable;
 		if (draggableFittable == null) { return false; }
 
-		int count = _fitter.GetActiveCount();
-		if (!HaveSpace(count)) { return false; }
+		if (_isDragTarget)
+		{
+			int count = _fitter.GetActiveCount();
+			if (!HaveSpace(count)) { return false; }
 
-		int index = _fitter.CalculateFittableIndex(count + 1, input.target.x);
+			int index = _fitter.CalculateFittableIndex(count + 1, input.target.x);
 
-		_fitter.EmplaceActive(draggableFittable, index);
-		_fitter.AnimatePositions();
+			_fitter.EmplaceActive(draggableFittable, index);
+			_fitter.AnimatePositions();
 
-		return true;
+			return true;
+		}
+
+		return false;
 	}
 
 	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
@@ -84,7 +89,6 @@ public class DropArea : FitterController
 				_hoveredPlaceholder = _fitter.Add();
 
 				_hoveredPlaceholder.GetGO().SetActive(false);
-				// (placeholder as IInteractable)?.SetState(false);
 
 				int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
 				_hoveredPlaceholder.SetPosition(index);
@@ -114,7 +118,6 @@ public class DropArea : FitterController
 		if (hoverablePlaceholder != null)
 		{
 			hoverablePlaceholder.GetGO().SetActive(true);
-			// (placeholder as IInteractable)?.SetState(true);
 
 			int index = hoverablePlaceholder.GetPosition();
 			_fitter.Remove(index);

@@ -112,11 +112,8 @@ public class FitterDebug : FitterController
 		if (_team != draggable.GetTeam()) { return false; }
 
 		IFittable draggableFittable = draggable as IFittable;
-		if (_pickedFittable == draggableFittable)
-		{
-			_pickedFittable = null;
-			_pickedId = 0;
-		}
+		if (draggableFittable == null) { return false; }
+
 		return false;
 	}
 

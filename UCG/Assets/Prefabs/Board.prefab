@@ -179,7 +179,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetLimit: 0
   _team: 0
-  _pickable: 0
+  _isDragSource: 1
+  _isDragTarget: 1
 --- !u!65 &6953231668352991804
 BoxCollider:
   m_ObjectHideFlags: 0
