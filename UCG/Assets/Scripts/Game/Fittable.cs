@@ -24,7 +24,7 @@ public class Fittable : MonoBehaviour
 	// ----- ----- ----- ----- -----
 
 	GameObject IGameObject.GetGO() => gameObject;
-	Vector3 IGameObject.GetVisiblePosition() => _root.position;
+	Vector3 IGameObject.GetVisiblePosition() => transform.position;
 
 	// ----- ----- ----- ----- -----
 	//     ICompatible
@@ -69,14 +69,14 @@ public class Fittable : MonoBehaviour
 	void IDraggable.OnPick(GameInputData input)
 	{
 		Vector3 position = input.target - input.direction;
-		_root.SetPositionAndRotation(position, Quaternion.identity);
+		transform.SetPositionAndRotation(position, Quaternion.identity);
 	}
 
 	void IDraggable.OnUpdate(GameInputData input)
 	{
 		Vector3 position = input.target - input.direction;
 
-		Vector3 move = position - _root.position; move.y = 0;
+		Vector3 move = position - transform.position; move.y = 0;
 		float moveMagnitude = move.magnitude;
 
 		Quaternion targetRotation = Quaternion.identity;
@@ -87,13 +87,13 @@ public class Fittable : MonoBehaviour
 			targetRotation = Quaternion.AngleAxis(angle, tangent);
 		}
 
-		Quaternion rotation = Quaternion.Lerp(_root.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
-		_root.SetPositionAndRotation(position, rotation);
+		Quaternion rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
+		transform.SetPositionAndRotation(position, rotation);
 	}
 
 	void IDraggable.OnDrop(GameInputData input)
 	{
-		_root.localPosition = Vector3.zero;
-		_root.localRotation = Quaternion.identity;
+		// _root.localPosition = Vector3.zero;
+		// _root.localRotation = Quaternion.identity;
 	}
 }
