@@ -67,6 +67,7 @@ public abstract class FitterController : MonoBehaviour
 		_pickedFittable = pickedFittable;
 		_pickedId = _pickedFittable.GetPosition() + 1;
 
+		_fitter.SkipAnimation(pickedFittable);
 		pickedFittable.GetGO().transform.SetParent(null, worldPositionStays: true);
 
 		return pickedDraggable;

@@ -142,6 +142,12 @@ public class Fitter : MonoBehaviour
 	private Coroutine _animationCoroutine;
 	private List<(Transform transform, Vector3 from, Vector3 to)> _animation = new List<(Transform, Vector3, Vector3)>();
 
+	public void SkipAnimation(IFittable fittable)
+	{
+		Transform fittableTransform = fittable.GetGO().transform;
+		_animation.RemoveAll(it => it.transform == fittableTransform);
+	}
+
 	public void Animate()
 	{
 		if (_animationCoroutine != null)
@@ -162,11 +168,12 @@ public class Fitter : MonoBehaviour
 		for (int i = 0; i < initialCount; i++)
 		{
 			Transform childTransform = _activeRoot.GetChild(i);
-			_animation.Add((
-				childTransform,
-				childTransform.localPosition,
-				new Vector3(offset + i * separation, 0, 0)
-			));
+
+			Vector3 from = childTransform.localPosition;
+			Vector3 to = new Vector3(offset + i * separation, 0, 0);
+			if (Vector3.SqrMagnitude(to - from) < 0.0001f) { continue; }
+
+			_animation.Add((childTransform, from, to));
 		}
 
 		for (int i = 0; i < _animation.Count; i++)
@@ -179,7 +186,7 @@ public class Fitter : MonoBehaviour
 		{
 			foreach (var (childTransform, from, to) in _animation)
 			{
-				childTransform.localPosition = Vector3.Lerp(
+				childTransform.localPosition = Vector3.LerpUnclamped(
 					from, to,
 					Easing.SmoothStep(Mathf.Min(time / _animationDuration, 1))
 				);

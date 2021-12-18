@@ -47,18 +47,14 @@ public class GameInput : MonoBehaviour
 	{
 		if (!hovered) { return; }
 
+		_state.hoverable?.OnExit(_state.draggable, input);
+		_state.hoverable = null;
+
 		_state.dragSource = hovered.GetComponent<IDragSource>();
 		IDraggable draggable = _state.dragSource?.OnPick(input);
 
-		if (draggable != null)
-		{
-			_state.hoverable?.OnExit(_state.draggable, input);
-
-			_state.draggable = draggable;
-			_state.draggable.OnPick(input);
-
-			_state.hoverable?.OnEnter(_state.draggable, input);
-		}
+		_state.draggable = draggable;
+		_state.draggable?.OnPick(input);
 	}
 
 	private void UpdateDrag(GameObject hovered, GameInputData input)
