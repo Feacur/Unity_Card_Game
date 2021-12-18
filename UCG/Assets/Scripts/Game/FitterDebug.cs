@@ -118,13 +118,8 @@ public class FitterDebug : FitterController
 		return false;
 	}
 
-	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult, Vector3 visiblePosition)
+	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
 	{
-		if (_pickedFittable != null)
-		{
-			_pickedFittable.GetGO().transform.position = visiblePosition;
-		}
-
 		if (dropResult && _pickedId > 0)
 		{
 			_fitter.Remove(_pickedId - 1);

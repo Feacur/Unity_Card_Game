@@ -54,7 +54,7 @@ public class Fitter : MonoBehaviour
 
 	public void EmplaceActive(IFittable fittable, int index)
 	{
-		fittable.GetGO().transform.SetParent(activeRoot, worldPositionStays: false);
+		fittable.GetGO().transform.SetParent(activeRoot, worldPositionStays: true);
 		fittable.SetPosition(index);
 	}
 

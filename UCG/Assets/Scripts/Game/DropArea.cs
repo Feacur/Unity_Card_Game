@@ -75,12 +75,11 @@ public class DropArea : FitterController
 		return true;
 	}
 
-	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult, Vector3 visiblePosition)
+	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
 	{
 		if (!dropResult && _pickedFittable != null && _pickedId > 0)
 		{
 			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
-			_pickedFittable.GetGO().transform.position = visiblePosition;
 			_fitter.AnimatePositions();
 		}
 		_pickedFittable = null;

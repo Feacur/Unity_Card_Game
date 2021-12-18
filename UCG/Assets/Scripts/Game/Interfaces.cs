@@ -55,5 +55,5 @@ public interface IDragContainer : IGameObject
 {
 	IDraggable OnPick(GameInputData input);
 	bool OnDrop(IDraggable draggable, GameInputData input);
-	void OnPickEnd(GameInputData input, bool dropResult, Vector3 visiblePosition);
+	void OnPickEnd(GameInputData input, bool dropResult);
 }
