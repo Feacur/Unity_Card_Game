@@ -164,7 +164,7 @@ MonoBehaviour:
   _pooledRoot: {fileID: 2290150036970449960}
   _animationDuration: 0.25
   rotation: {x: 0, y: 0, z: 0}
-  _separationFraction: 1
+  _separationFraction: 1.2
 --- !u!114 &4417406192181007055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,8 +178,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetLimit: 0
-  _team: 0
   _isDragSource: 1
+  _team: 1
   _isDragTarget: 1
 --- !u!65 &6953231668352991804
 BoxCollider:
@@ -466,7 +466,7 @@ MonoBehaviour:
   _pooledRoot: {fileID: 5232665342209775024}
   _animationDuration: 0.25
   rotation: {x: 0, y: 0, z: 0}
-  _separationFraction: 1
+  _separationFraction: 1.2
 --- !u!114 &8841417350800153727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,7 +480,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetLimit: 0
-  _team: 0
+  _isDragSource: 0
+  _team: 2
   _pickable: 0
   _previewable: 0
   _inputCount: 0

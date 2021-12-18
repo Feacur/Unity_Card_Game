@@ -49,9 +49,13 @@ public interface IHoverable : IGameObject
 	void OnExit(IDraggable draggable, GameInputData input);
 }
 
-public interface IDragContainer : IGameObject
+public interface IDragSource : IGameObject
 {
 	IDraggable OnPick(GameInputData input);
+	void OnDrop(GameInputData input, bool dropResult);
+}
+
+public interface IDragTarget : IGameObject
+{
 	bool OnDrop(IDraggable draggable, GameInputData input);
-	void OnPickEnd(GameInputData input, bool dropResult);
 }

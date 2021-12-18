@@ -12,7 +12,7 @@ public class Fitter : MonoBehaviour
 	[SerializeField] private float _animationDuration = 0.25f;
 
 	public Vector3 rotation;
-	[Range(0, 1)] public float _separationFraction = 1;
+	[Range(0, 2)] public float _separationFraction = 1;
 
 	// ----- ----- ----- ----- -----
 	//     Dimensions
@@ -22,15 +22,18 @@ public class Fitter : MonoBehaviour
 
 	public int CalculateFittableIndex(int count, float positionX)
 	{
-		if (count <= 1) { return 0; }
+		if (count == 0) { return -1; }
+
+		float elementHalfSizeX = _elementPrefab.GetSize().x / 2;
+		if (count == 1)
+		{
+			if (positionX < -elementHalfSizeX) { return -1; }
+			if (positionX >  elementHalfSizeX) { return  1; }
+			return 0;
+		}
 
 		CalculateMetrics(count, out float separation, out float offset);
-
-		float localPositionOffsetX = positionX - offset;
-		float elementHalfSizeX = _elementPrefab.GetSize().x / 2;
-		int index = Mathf.FloorToInt((localPositionOffsetX + elementHalfSizeX) / separation);
-
-		return Mathf.Clamp(index, 0, count - 1);
+		return Mathf.FloorToInt((positionX - offset + elementHalfSizeX) / separation);
 	}
 
 	public void CalculateMetrics(int count, out float separation, out float offset)

@@ -15,7 +15,7 @@ public class GameInput : MonoBehaviour
 	private struct State
 	{
 		public IHoverable hoverable;
-		public IDragContainer dragContainerSource;
+		public IDragSource dragSource;
 		public IDraggable draggable;
 	};
 	private State _state;
@@ -47,8 +47,8 @@ public class GameInput : MonoBehaviour
 	{
 		if (!hovered) { return; }
 
-		_state.dragContainerSource = hovered.GetComponent<IDragContainer>();
-		IDraggable draggable = _state.dragContainerSource?.OnPick(input);
+		_state.dragSource = hovered.GetComponent<IDragSource>();
+		IDraggable draggable = _state.dragSource?.OnPick(input);
 
 		if (draggable != null)
 		{
@@ -76,12 +76,12 @@ public class GameInput : MonoBehaviour
 		bool dropResult = false;
 		if (hovered)
 		{
-			IDragContainer hoveredDragContainer = hovered.GetComponent<IDragContainer>();
-			dropResult = hoveredDragContainer?.OnDrop(state.draggable, input) ?? false;
+			IDragTarget hoveredDragTarget = hovered.GetComponent<IDragTarget>();
+			dropResult = hoveredDragTarget?.OnDrop(state.draggable, input) ?? false;
 		}
 
 		state.draggable?.OnDrop(input);
-		state.dragContainerSource?.OnPickEnd(input, dropResult);
+		state.dragSource?.OnDrop(input, dropResult);
 	}
 
 	// ----- ----- ----- ----- -----

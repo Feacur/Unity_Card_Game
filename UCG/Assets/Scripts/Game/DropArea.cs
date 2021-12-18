@@ -1,11 +1,10 @@
 using UnityEngine;
 
 public class DropArea : FitterController
-	, IDragContainer
+	, IDragTarget
 	, IHoverable
 {
 	[SerializeField] private int _team;
-	[SerializeField] private bool _isDragSource;
 	[SerializeField] private bool _isDragTarget;
 
 	// ----- ----- ----- ----- -----
@@ -15,63 +14,29 @@ public class DropArea : FitterController
 	GameObject IGameObject.GetGO() => gameObject;
 
 	// ----- ----- ----- ----- -----
-	//     IDragContainer
+	//     IDropContainer
 	// ----- ----- ----- ----- -----
 
-	private IFittable _pickedFittable;
-	private int _pickedId;
-
-	IDraggable IDragContainer.OnPick(GameInputData input)
+	bool IDragTarget.OnDrop(IDraggable draggable, GameInputData input)
 	{
-		if (!_isDragSource) { return null; }
+		if (!_isDragTarget) { return false; }
 
-		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
-		IFittable picked = _fitter.Get(index);
-		if (picked == null) { return null; }
-		if (!(picked is IDraggable)) { return null; }
-
-		_pickedFittable = picked;
-		_pickedId = _pickedFittable.GetPosition() + 1;
-
-		picked.GetGO().transform.SetParent(null, worldPositionStays: true);
-
-		return picked as IDraggable;
-	}
-
-	bool IDragContainer.OnDrop(IDraggable draggable, GameInputData input)
-	{
 		if (draggable == null) { return false; }
 		if (_team != draggable.GetTeam()) { return false; }
 
 		IFittable draggableFittable = draggable as IFittable;
 		if (draggableFittable == null) { return false; }
 
-		if (_isDragTarget)
-		{
-			int count = _fitter.GetActiveCount();
-			if (!HaveSpace(count)) { return false; }
+		int count = _fitter.GetActiveCount();
+		if (!HaveSpace(count)) { return false; }
 
-			int index = _fitter.CalculateFittableIndex(count + 1, input.target.x);
+		int index = _fitter.CalculateFittableIndex(count + 1, input.target.x);
+		index = Mathf.Clamp(index, 0, count);
 
-			_fitter.EmplaceActive(draggableFittable, index);
-			_fitter.Animate();
-
-			return true;
-		}
-
-		return false;
-	}
-
-	void IDragContainer.OnPickEnd(GameInputData input, bool dropResult)
-	{
-		if (!dropResult && _pickedFittable != null && _pickedId > 0)
-		{
-			_fitter.EmplaceActive(_pickedFittable, _pickedId - 1);
-		}
-		_pickedFittable = null;
-		_pickedId = 0;
-
+		_fitter.EmplaceActive(draggableFittable, index);
 		_fitter.Animate();
+
+		return true;
 	}
 
 	// ----- ----- ----- ----- -----
@@ -90,7 +55,10 @@ public class DropArea : FitterController
 
 				_hoveredPlaceholder.GetGO().SetActive(false);
 
-				int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
+				int count = _fitter.GetActiveCount();
+				int index = _fitter.CalculateFittableIndex(count, input.target.x);
+				index = Mathf.Clamp(index, 0, count - 1);
+
 				_hoveredPlaceholder.SetPosition(index);
 				_fitter.Animate();
 			}
@@ -101,7 +69,10 @@ public class DropArea : FitterController
 	{
 		if (_hoveredPlaceholder != null)
 		{
-			int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
+			int count = _fitter.GetActiveCount();
+			int index = _fitter.CalculateFittableIndex(count, input.target.x);
+			index = Mathf.Clamp(index, 0, count - 1);
+
 			if (_hoveredPlaceholder.GetPosition() != index)
 			{
 				_hoveredPlaceholder.SetPosition(index);
