@@ -103,17 +103,20 @@ public class GameInput : MonoBehaviour
 		GameObject hovered = hit.transform?.gameObject;
 		UpdateHover(hovered, input);
 
-		if (Input.GetMouseButtonDown(0))
+		if (_state.draggable == null)
 		{
-			UpdatePick(hovered, input);
-		}
-		else if (Input.GetMouseButtonUp(0))
-		{
-			UpdateDrop(hovered, input);
+			if (Input.GetMouseButtonDown(0))
+			{
+				UpdatePick(hovered, input);
+			}
 		}
 		else
 		{
 			UpdateDrag(hovered, input);
+			if (Input.GetMouseButtonUp(0))
+			{
+				UpdateDrop(hovered, input);
+			}
 		}
 	}
 }
