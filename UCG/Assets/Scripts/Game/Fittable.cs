@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Fittable : MonoBehaviour
+	, IContent
 	, IFittable
 	, IDraggable
 {
@@ -31,7 +32,6 @@ public class Fittable : MonoBehaviour
 	// ----- ----- ----- ----- -----
 
 	int ICompatible.GetTeam() => _team;
-	void ICompatible.SetTeam(int value) => _team = value;
 
 	// ----- ----- ----- ----- -----
 	//     IPreviewable
@@ -53,13 +53,21 @@ public class Fittable : MonoBehaviour
 	}
 
 	// ----- ----- ----- ----- -----
+	//     IContent
+	// ----- ----- ----- ----- -----
+
+	void IContent.Set(int team, string text)
+	{
+		_team = team;
+		_content.text = text;
+	}
+
+	// ----- ----- ----- ----- -----
 	//     IFittable
 	// ----- ----- ----- ----- -----
 
 	int IFittable.GetPosition() => transform.GetSiblingIndex();
 	void IFittable.SetPosition(int index) => transform.SetSiblingIndex(index);
-
-	void IFittable.SetContent(string text) => _content.text = text;
 
 	// ----- ----- ----- ----- -----
 	//     IDraggable

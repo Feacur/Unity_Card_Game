@@ -53,8 +53,8 @@ public class FitterDebug : FitterController
 		for (int i = 0; i < CountLimit; i++)
 		{
 			IFittable fittable = _fitter.Get(i);
-			fittable.SetTeam(_team);
-			fittable.SetContent((i + 1).ToString());
+			IContent fittableContent = fittable as IContent;
+			fittableContent.Set(_team, (i + 1).ToString());
 		}
 
 		_inputCount = Mathf.Min(_inputCount, _targetLimit);

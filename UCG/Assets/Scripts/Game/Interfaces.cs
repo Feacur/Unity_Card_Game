@@ -16,7 +16,6 @@ public interface IComponent
 public interface ICompatible
 {
 	int GetTeam();
-	void SetTeam(int value);
 }
 
 public interface IPreviewable
@@ -25,14 +24,16 @@ public interface IPreviewable
 	void Hide(GameInputData input);
 }
 
+public interface IContent
+{
+	void Set(int team, string value);
+}
+
 public interface IFittable : IComponent
-	, ICompatible
 	, IPreviewable
 {
 	int GetPosition();
 	void SetPosition(int index);
-
-	void SetContent(string value);
 }
 
 public interface IDraggable : IComponent
