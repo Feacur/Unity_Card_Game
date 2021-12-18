@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class Fitter : MonoBehaviour
 {
-	[SerializeField] private BoxCollider dimensions;
+	[SerializeField] private BoxCollider _dimensions;
 
-	[SerializeField] private Fittable elementPrefab;
-	[SerializeField] private Transform activeRoot;
-	[SerializeField] private Transform pooledRoot;
-	[SerializeField] private float _animationSpeed = 10;
+	[SerializeField] private Fittable _elementPrefab;
+	[SerializeField] private Transform _activeRoot;
+	[SerializeField] private Transform _pooledRoot;
+	[SerializeField] private float _animationDuration = 0.25f;
 
 	public Vector3 rotation;
-	[Range(0, 1)] public float separationFraction = 1;
+	[Range(0, 1)] public float _separationFraction = 1;
 
 	// ----- ----- ----- ----- -----
 	//     Dimensions
 	// ----- ----- ----- ----- -----
 
-	public Vector3 GetSize() => dimensions.size;
+	public Vector3 GetSize() => _dimensions.size;
 
 	public int CalculateFittableIndex(int count, float positionX)
 	{
@@ -27,7 +27,7 @@ public class Fitter : MonoBehaviour
 		CalculateMetrics(count, out float separation, out float offset);
 
 		float localPositionOffsetX = positionX - offset;
-		float elementHalfSizeX = elementPrefab.GetSize().x / 2;
+		float elementHalfSizeX = _elementPrefab.GetSize().x / 2;
 		int index = Mathf.FloorToInt((localPositionOffsetX + elementHalfSizeX) / separation);
 
 		return Mathf.Clamp(index, 0, count - 1);
@@ -37,11 +37,11 @@ public class Fitter : MonoBehaviour
 	{
 		if (count <= 1) { separation = 0; offset = 0; return; }
 
-		float elementSizeX = elementPrefab.GetSize().x;
+		float elementSizeX = _elementPrefab.GetSize().x;
 		float elementCenterBoundsX = GetSize().x - elementSizeX;
 		int spacesCount = count - 1;
 
-		separation = Mathf.Min(elementSizeX * separationFraction, elementCenterBoundsX / spacesCount);
+		separation = Mathf.Min(elementSizeX * _separationFraction, elementCenterBoundsX / spacesCount);
 		offset = - separation * spacesCount / 2;
 	}
 
@@ -49,58 +49,58 @@ public class Fitter : MonoBehaviour
 	//     Content
 	// ----- ----- ----- ----- -----
 
-	public int GetActiveCount() => activeRoot.childCount;
-	public int GetPooledCount() => pooledRoot.childCount;
+	public int GetActiveCount() => _activeRoot.childCount;
+	public int GetPooledCount() => _pooledRoot.childCount;
 
 	public void EmplaceActive(IFittable fittable, int index)
 	{
-		fittable.GetGO().transform.SetParent(activeRoot, worldPositionStays: true);
+		fittable.GetGO().transform.SetParent(_activeRoot, worldPositionStays: true);
 		fittable.SetPosition(index);
 	}
 
 	public void EmplacePooled(IFittable fittable)
 	{
 		Transform fittableTransform = fittable.GetGO().transform;
-		fittableTransform.SetParent(pooledRoot, worldPositionStays: false);
+		fittableTransform.SetParent(_pooledRoot, worldPositionStays: false);
 	}
 
 	public IFittable Add()
 	{
-		foreach (Transform child in pooledRoot)
+		foreach (Transform child in _pooledRoot)
 		{
-			child.SetParent(activeRoot, worldPositionStays: false);
+			child.SetParent(_activeRoot, worldPositionStays: false);
 			return child.GetComponent<IFittable>();
 		}
 
-		return GameObject.Instantiate(elementPrefab, parent: activeRoot, worldPositionStays: false);
+		return GameObject.Instantiate(_elementPrefab, parent: _activeRoot, worldPositionStays: false);
 	}
 
 	public IFittable Get(int index)
 	{
 		if (index < 0) { return null; }
-		if (index >= activeRoot.childCount) { return null; }
+		if (index >= _activeRoot.childCount) { return null; }
 
-		Transform child = activeRoot.GetChild(index);
+		Transform child = _activeRoot.GetChild(index);
 		return child.GetComponent<IFittable>();
 	}
 
 	public bool Remove(int index)
 	{
 		if (index < 0) { return false; }
-		if (index >= activeRoot.childCount) { return false; }
+		if (index >= _activeRoot.childCount) { return false; }
 
-		Transform child = activeRoot.GetChild(index);
-		child.SetParent(pooledRoot, worldPositionStays: false);
+		Transform child = _activeRoot.GetChild(index);
+		child.SetParent(_pooledRoot, worldPositionStays: false);
 
 		return true;
 	}
 
 	public void Reset()
 	{
-		while (activeRoot.childCount > 0)
+		while (_activeRoot.childCount > 0)
 		{
-			Transform child = activeRoot.GetChild(0);
-			child.SetParent(pooledRoot, worldPositionStays: false);
+			Transform child = _activeRoot.GetChild(0);
+			child.SetParent(_pooledRoot, worldPositionStays: false);
 		}
 	}
 
@@ -108,25 +108,25 @@ public class Fitter : MonoBehaviour
 	{
 		if (Application.isPlaying)
 		{
-			foreach (Transform child in activeRoot)
+			foreach (Transform child in _activeRoot)
 			{
 				GameObject.Destroy(child.gameObject);
 			}
-			foreach (Transform child in pooledRoot)
+			foreach (Transform child in _pooledRoot)
 			{
 				GameObject.Destroy(child.gameObject);
 			}
 		}
 		else
 		{
-			while (activeRoot.childCount > 0)
+			while (_activeRoot.childCount > 0)
 			{
-				Transform child = activeRoot.GetChild(0);
+				Transform child = _activeRoot.GetChild(0);
 				GameObject.DestroyImmediate(child.gameObject);
 			}
-			while (pooledRoot.childCount > 0)
+			while (_pooledRoot.childCount > 0)
 			{
-				Transform child = pooledRoot.GetChild(0);
+				Transform child = _pooledRoot.GetChild(0);
 				GameObject.DestroyImmediate(child.gameObject);
 			}
 		}
@@ -136,61 +136,60 @@ public class Fitter : MonoBehaviour
 	//     Animation
 	// ----- ----- ----- ----- -----
 
-	private Coroutine _animatePositionsCoroutine;
-	private List<Vector3> _animationFrom = new List<Vector3>();
+	private Coroutine _animationCoroutine;
+	private List<(Transform transform, Vector3 from, Vector3 to)> _animation = new List<(Transform, Vector3, Vector3)>();
 
-	public void AnimatePositions()
+	public void Animate()
 	{
-		if (_animatePositionsCoroutine != null)
+		if (_animationCoroutine != null)
 		{
-			StopCoroutine(_animatePositionsCoroutine);
+			StopCoroutine(_animationCoroutine);
 		}
-		_animatePositionsCoroutine = StartCoroutine(AnimatePositionsCoroutine());
+		_animationCoroutine = StartCoroutine(AnimationCoroutine());
 	}
 	
-	private IEnumerator AnimatePositionsCoroutine()
+	private IEnumerator AnimationCoroutine()
 	{
 		yield return null;
 
-		int count = GetActiveCount();
+		int initialCount = GetActiveCount();
+		CalculateMetrics(initialCount, out float separation, out float offset);
 
-		_animationFrom.Clear();
-		for (int i = 0; i < count; i++)
+		_animation.Clear();
+		for (int i = 0; i < initialCount; i++)
 		{
-			Transform childTransform = activeRoot.GetChild(i);
-			_animationFrom.Add(childTransform.localPosition);
+			Transform childTransform = _activeRoot.GetChild(i);
+			_animation.Add((
+				childTransform,
+				childTransform.localPosition,
+				new Vector3(offset + i * separation, 0, 0)
+			));
 		}
 
-		CalculateMetrics(count, out float separation, out float offset);
-
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < _animation.Count; i++)
 		{
-			Transform childTransform = activeRoot.GetChild(i);
+			Transform childTransform = _animation[i].transform;
 			childTransform.localRotation = Quaternion.Euler(rotation);
 		}
 
-		float animationDuration = 0.25f;
-		for (float time = 0; time < animationDuration; time += Time.deltaTime)
+		for (float time = 0; time < _animationDuration; time += Time.deltaTime)
 		{
-			for (int i = 0; i < count; i++)
+			foreach (var (childTransform, from, to) in _animation)
 			{
-				Transform childTransform = activeRoot.GetChild(i);
 				childTransform.localPosition = Vector3.Lerp(
-					_animationFrom[i],
-					new Vector3(offset + i * separation, 0, 0),
-					Easing.SmoothStep(Mathf.Min(time / animationDuration, 1))
+					from, to,
+					Easing.SmoothStep(Mathf.Min(time / _animationDuration, 1))
 				);
 			}
 			yield return null;
 		}
 
-		_animationFrom.Clear();
-		for (int i = 0; i < count; i++)
+		foreach (var (childTransform, from, to) in _animation)
 		{
-			Transform childTransform = activeRoot.GetChild(i);
-			childTransform.localPosition = new Vector3(offset + i * separation, 0, 0);
+			childTransform.localPosition = to;
 		}
+		_animation.Clear();
 
-		_animatePositionsCoroutine = null;
+		_animationCoroutine = null;
 	}
 }

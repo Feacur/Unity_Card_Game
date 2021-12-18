@@ -24,7 +24,7 @@ public class FitterDebug : FitterController
 			{
 				_fitter.Remove(i - 1);
 			}
-			_fitter.AnimatePositions();
+			_fitter.Animate();
 		}
 		else if (currentCount < targetCount)
 		{
@@ -32,7 +32,7 @@ public class FitterDebug : FitterController
 			{
 				_fitter.Add();
 			}
-			_fitter.AnimatePositions();
+			_fitter.Animate();
 		}
 	}
 
@@ -126,7 +126,7 @@ public class FitterDebug : FitterController
 		_pickedFittable = null;
 		_pickedId = 0;
 
-		_fitter.AnimatePositions();
+		_fitter.Animate();
 	}
 
 	// ----- ----- ----- ----- -----

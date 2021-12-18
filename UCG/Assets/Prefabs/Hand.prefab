@@ -159,13 +159,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensions: {fileID: 391241506460618281}
-  elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
-  activeRoot: {fileID: 2806200367217325867}
-  pooledRoot: {fileID: 4824278855069592465}
+  _dimensions: {fileID: 391241506460618281}
+  _elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
+  _activeRoot: {fileID: 2806200367217325867}
+  _pooledRoot: {fileID: 4824278855069592465}
+  _animationDuration: 0.25
   rotation: {x: 0, y: 0, z: 5}
-  separationFraction: 0.9
-  yankOnSelect: 0
+  _separationFraction: 0.9
 --- !u!114 &3662545367381567728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,10 +178,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b50dd2477cd298d4aab705d1a27c508e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetLimit: 10
-  team: 0
-  inputCount: 0
-  persistent: 0
+  _targetLimit: 0
+  _team: 0
+  _pickable: 0
+  _previewable: 0
+  _inputCount: 0
+  _persistent: 0
 --- !u!65 &391241506460618281
 BoxCollider:
   m_ObjectHideFlags: 0

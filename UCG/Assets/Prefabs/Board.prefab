@@ -158,13 +158,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensions: {fileID: 6953231668352991804}
-  elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
-  activeRoot: {fileID: 8972953827914023387}
-  pooledRoot: {fileID: 2290150036970449960}
-  _animationSpeed: 10
+  _dimensions: {fileID: 6953231668352991804}
+  _elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
+  _activeRoot: {fileID: 8972953827914023387}
+  _pooledRoot: {fileID: 2290150036970449960}
+  _animationDuration: 0.25
   rotation: {x: 0, y: 0, z: 0}
-  separationFraction: 1
+  _separationFraction: 1
 --- !u!114 &4417406192181007055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,13 +460,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8255dfe99d457f48ad7e70f354d8ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensions: {fileID: 2483332961042569694}
-  elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
-  activeRoot: {fileID: 8586215460325836959}
-  pooledRoot: {fileID: 5232665342209775024}
-  _animationSpeed: 10
+  _dimensions: {fileID: 2483332961042569694}
+  _elementPrefab: {fileID: 1917796299787667722, guid: 1291c20be2c3971438332ca02ef7976e, type: 3}
+  _activeRoot: {fileID: 8586215460325836959}
+  _pooledRoot: {fileID: 5232665342209775024}
+  _animationDuration: 0.25
   rotation: {x: 0, y: 0, z: 0}
-  separationFraction: 1
+  _separationFraction: 1
 --- !u!114 &8841417350800153727
 MonoBehaviour:
   m_ObjectHideFlags: 0
