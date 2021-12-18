@@ -8,10 +8,11 @@ public class DropArea : FitterController
 	[SerializeField] private bool _isDragTarget;
 
 	// ----- ----- ----- ----- -----
-	//     IGameObject
+	//     IComponent
 	// ----- ----- ----- ----- -----
 
-	GameObject IGameObject.GetGO() => gameObject;
+	GameObject IComponent.GetGO() => gameObject;
+	T IComponent.GetComponent<T>() => GetComponent<T>();
 
 	// ----- ----- ----- ----- -----
 	//     IDropContainer
@@ -24,6 +25,7 @@ public class DropArea : FitterController
 		if (draggable == null) { return false; }
 		if (_team != draggable.GetTeam()) { return false; }
 
+		// IFittable draggableFittable = draggable.GetComponent<IFittable>();
 		IFittable draggableFittable = draggable as IFittable;
 		if (draggableFittable == null) { return false; }
 

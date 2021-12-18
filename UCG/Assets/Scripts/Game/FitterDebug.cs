@@ -75,10 +75,11 @@ public class FitterDebug : FitterController
 	}
 
 	// ----- ----- ----- ----- -----
-	//     IGameObject
+	//     IComponent
 	// ----- ----- ----- ----- -----
 
-	GameObject IGameObject.GetGO() => gameObject;
+	GameObject IComponent.GetGO() => gameObject;
+	T IComponent.GetComponent<T>() => GetComponent<T>();
 
 	// ----- ----- ----- ----- -----
 	//     IHoverable

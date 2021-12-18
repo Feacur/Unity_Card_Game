@@ -39,10 +39,11 @@ public abstract class FitterController : MonoBehaviour
 	}
 
 	// ----- ----- ----- ----- -----
-	//     IGameObject
+	//     IComponent
 	// ----- ----- ----- ----- -----
 
-	GameObject IGameObject.GetGO() => gameObject;
+	GameObject IComponent.GetGO() => gameObject;
+	T IComponent.GetComponent<T>() => GetComponent<T>();
 
 	// ----- ----- ----- ----- -----
 	//     IPickContainer
@@ -56,16 +57,19 @@ public abstract class FitterController : MonoBehaviour
 		if (!_isDragSource) { return null; }
 
 		int index = _fitter.CalculateFittableIndex(_fitter.GetActiveCount(), input.target.x);
-		IFittable picked = _fitter.Get(index);
-		if (picked == null) { return null; }
-		if (!(picked is IDraggable)) { return null; }
+		IFittable pickedFittable = _fitter.Get(index);
+		if (pickedFittable == null) { return null; }
 
-		_pickedFittable = picked;
+		// IDraggable pickedDraggable = pickedFittable.GetComponent<IDraggable>();
+		IDraggable pickedDraggable = pickedFittable as IDraggable;
+		if (pickedDraggable == null) { return null; }
+
+		_pickedFittable = pickedFittable;
 		_pickedId = _pickedFittable.GetPosition() + 1;
 
-		picked.GetGO().transform.SetParent(null, worldPositionStays: true);
+		pickedFittable.GetGO().transform.SetParent(null, worldPositionStays: true);
 
-		return picked as IDraggable;
+		return pickedDraggable;
 	}
 
 	void IDragSource.OnDrop(GameInputData input, bool dropResult)

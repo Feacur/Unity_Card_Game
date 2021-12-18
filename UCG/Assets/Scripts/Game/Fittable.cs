@@ -20,10 +20,11 @@ public class Fittable : MonoBehaviour
 	public Vector3 GetSize() => _dimensions.size;
 
 	// ----- ----- ----- ----- -----
-	//     IGameObject
+	//     IComponent
 	// ----- ----- ----- ----- -----
 
-	GameObject IGameObject.GetGO() => gameObject;
+	GameObject IComponent.GetGO() => gameObject;
+	T IComponent.GetComponent<T>() => GetComponent<T>();
 
 	// ----- ----- ----- ----- -----
 	//     ICompatible

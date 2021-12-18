@@ -76,8 +76,8 @@ public class GameInput : MonoBehaviour
 		bool dropResult = false;
 		if (hovered)
 		{
-			IDragTarget hoveredDragTarget = hovered.GetComponent<IDragTarget>();
-			dropResult = hoveredDragTarget?.OnDrop(state.draggable, input) ?? false;
+			IDragTarget dragTarget = hovered.GetComponent<IDragTarget>();
+			dropResult = dragTarget?.OnDrop(state.draggable, input) ?? false;
 		}
 
 		state.draggable?.OnDrop(input);

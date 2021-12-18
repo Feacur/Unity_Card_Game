@@ -7,9 +7,10 @@ public struct GameInputData
 	public Vector3 target;
 }
 
-public interface IGameObject
+public interface IComponent
 {
 	GameObject GetGO();
+	T GetComponent<T>() where T : IComponent;
 }
 
 public interface ICompatible
@@ -24,7 +25,7 @@ public interface IPreviewable
 	void Hide(GameInputData input);
 }
 
-public interface IFittable : IGameObject
+public interface IFittable : IComponent
 	, ICompatible
 	, IPreviewable
 {
@@ -34,7 +35,7 @@ public interface IFittable : IGameObject
 	void SetContent(string value);
 }
 
-public interface IDraggable : IGameObject
+public interface IDraggable : IComponent
 	, ICompatible
 {
 	void OnPick(GameInputData input);
@@ -42,20 +43,20 @@ public interface IDraggable : IGameObject
 	void OnDrop(GameInputData input);
 }
 
-public interface IHoverable : IGameObject
+public interface IHoverable : IComponent
 {
 	void OnEnter(IDraggable draggable, GameInputData input);
 	void OnUpdate(IDraggable draggable, GameInputData input);
 	void OnExit(IDraggable draggable, GameInputData input);
 }
 
-public interface IDragSource : IGameObject
+public interface IDragSource : IComponent
 {
 	IDraggable OnPick(GameInputData input);
 	void OnDrop(GameInputData input, bool dropResult);
 }
 
-public interface IDragTarget : IGameObject
+public interface IDragTarget : IComponent
 {
 	bool OnDrop(IDraggable draggable, GameInputData input);
 }
