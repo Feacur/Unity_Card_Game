@@ -87,15 +87,16 @@ public class GameInput : MonoBehaviour
 	private void Update()
 	{
 		Ray worldRay = _camera.ScreenPointToRay(Input.mousePosition);
-		Physics.Raycast(worldRay, out RaycastHit hit);
+		Physics.Raycast(worldRay, out RaycastHit worldHit);
 
+		float distance = Vector3.Magnitude(_camera.transform.position) / Vector3.Dot(worldRay.direction, Vector3.down);
 		GameInputData input = new GameInputData {
 			origin = _camera.transform.position,
 			direction = worldRay.direction,
-			target = hit.point,
+			target = _camera.transform.position + worldRay.direction * distance,
 		};
 
-		GameObject hovered = hit.transform?.gameObject;
+		GameObject hovered = worldHit.transform?.gameObject;
 		UpdateHover(hovered, input);
 
 		if (_state.draggable == null)

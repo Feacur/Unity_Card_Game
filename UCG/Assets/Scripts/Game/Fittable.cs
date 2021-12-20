@@ -81,7 +81,9 @@ public class Fittable : MonoBehaviour
 
 	void IDraggable.OnUpdate(GameInputData input)
 	{
-		Vector3 position = input.target - input.direction;
+		const float DragHeight = 1;
+		float distance = DragHeight / Vector3.Dot(input.direction, Vector3.up);
+		Vector3 position = input.target + input.direction * distance;
 
 		Vector3 move = position - transform.position; move.y = 0;
 		float moveMagnitude = move.magnitude;
