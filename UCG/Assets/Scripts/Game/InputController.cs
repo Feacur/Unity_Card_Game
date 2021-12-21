@@ -1,22 +1,27 @@
 using UnityEngine;
 
-public class GameInput : MonoBehaviour
+public class InputController : MonoBehaviour
 {
+	private const float DragThreshold = 50;
+
 	// ----- ----- ----- ----- -----
 	//     Dependencies (external)
 	// ----- ----- ----- ----- -----
 
+	private InputTracker _inputTracker;
 	[SerializeField] private Camera _camera;
 
 	// ----- ----- ----- ----- -----
 	//     Implementation
 	// ----- ----- ----- ----- -----
 
+	[System.Serializable]
 	private struct State
 	{
 		public IHoverable hoverable;
 		public IDragSource dragSource;
 		public IDraggable draggable;
+		public PlatformInput.ActionType pickAction;
 	};
 	private State _state;
 
@@ -43,17 +48,21 @@ public class GameInput : MonoBehaviour
 		}
 	}
 
-	private void UpdatePick(GameObject hovered, GameInputData input)
+	private void UpdateKeep(GameObject hovered, GameInputData input)
 	{
 		if (!hovered) { return; }
+
+		_state.dragSource = hovered.GetComponent<IDragSource>();
+		_state.draggable = _state.dragSource?.OnPick(input);
+	}
+
+	private void UpdatePick(GameObject hovered, GameInputData input)
+	{
+		if (_state.draggable == null) { return; }
 
 		_state.hoverable?.OnExit(_state.draggable, input);
 		_state.hoverable = null;
 
-		_state.dragSource = hovered.GetComponent<IDragSource>();
-		IDraggable draggable = _state.dragSource?.OnPick(input);
-
-		_state.draggable = draggable;
 		_state.draggable?.OnPick(input);
 	}
 
@@ -68,6 +77,7 @@ public class GameInput : MonoBehaviour
 		this._state = default;
 
 		state.hoverable?.OnExit(state.draggable, input);
+		state.hoverable = null;
 
 		bool dropResult = false;
 		if (hovered)
@@ -84,9 +94,21 @@ public class GameInput : MonoBehaviour
 	//     MonoBehaviour
 	// ----- ----- ----- ----- -----
 
+	private void Awake()
+	{
+		_inputTracker = new InputTracker(
+			dragThreshold: DragThreshold
+		);
+	}
+
 	private void Update()
 	{
-		Ray worldRay = _camera.ScreenPointToRay(Input.mousePosition);
+		Vector3 position = PlatformInput.GetPrimaryPosition();
+		PlatformInput.ActionType actionType = _inputTracker.Do(
+			position, PlatformInput.GetAction(0), PlatformInput.GetAction(1)
+		);
+
+		Ray worldRay = _camera.ScreenPointToRay(position);
 		Physics.Raycast(worldRay, out RaycastHit worldHit);
 
 		float distance = Vector3.Magnitude(_camera.transform.position) / Vector3.Dot(worldRay.direction, Vector3.down);
@@ -97,21 +119,56 @@ public class GameInput : MonoBehaviour
 		};
 
 		GameObject hovered = worldHit.transform?.gameObject;
-		UpdateHover(hovered, input);
 
-		if (_state.draggable == null)
+		if (_state.pickAction == PlatformInput.ActionType.None)
 		{
-			if (Input.GetMouseButtonDown(0))
+			switch (actionType)
 			{
-				UpdatePick(hovered, input);
+				case PlatformInput.ActionType.None:
+				case PlatformInput.ActionType.Hold:
+					if (_state.draggable == null)
+					{
+						UpdateHover(hovered, input);
+					}
+					break;
+
+				case PlatformInput.ActionType.Down:
+					UpdateKeep(hovered, input);
+					break;
+
+				case PlatformInput.ActionType.Up:
+					UpdateDrop(null, input);
+					break;
+
+				case PlatformInput.ActionType.Tap:
+				case PlatformInput.ActionType.Drag:
+					_state.pickAction = actionType;
+					UpdatePick(hovered, input);
+					break;
+
+				default:
+					break;
 			}
 		}
 		else
 		{
 			UpdateDrag(hovered, input);
-			if (Input.GetMouseButtonUp(0))
+			switch (actionType)
 			{
-				UpdateDrop(hovered, input);
+				case PlatformInput.ActionType.None:
+				case PlatformInput.ActionType.Hold:
+					UpdateHover(hovered, input);
+					break;
+
+				case PlatformInput.ActionType.Tap:
+				case PlatformInput.ActionType.Up:
+					UpdateDrop(hovered, input);
+					break;
+
+				case PlatformInput.ActionType.Cancel:
+				case PlatformInput.ActionType.Error:
+					UpdateDrop(null, input);
+				break;
 			}
 		}
 	}
