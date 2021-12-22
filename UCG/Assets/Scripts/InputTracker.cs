@@ -14,19 +14,36 @@ public class InputTracker
 	//     API
 	// ----- ----- ----- ----- -----
 
-	public PlatformInput.ActionType Do(Vector2 position, PlatformInput.ActionType confirm, PlatformInput.ActionType decline)
+	public PlatformInput.ActionType Do(Vector2 position, PlatformInput.ActionType confirm)
 	{
-		if (decline == PlatformInput.ActionType.Up)
-		{
-			_down = default; _drag = default;
-			return PlatformInput.ActionType.Cancel;
-		}
-
 		Vector3 from = _down.position;
 
 		bool isDown = _down.frame != 0;
 		bool isDrag = _drag.frame != 0;
 
+		// handle errors
+		switch (confirm)
+		{
+			case PlatformInput.ActionType.None:
+			case PlatformInput.ActionType.Down:
+				if (isDown || isDrag)
+				{
+					_down = default; _drag = default;
+					return PlatformInput.ActionType.Error;
+				}
+				break;
+
+			case PlatformInput.ActionType.Hold:
+			case PlatformInput.ActionType.Up:
+				if (!isDown)
+				{
+					_down = default; _drag = default;
+					return PlatformInput.ActionType.Error;
+				}
+				break;
+		}
+
+		// handle transitions
 		switch (confirm)
 		{
 			case PlatformInput.ActionType.Down: {
@@ -34,7 +51,6 @@ public class InputTracker
 			} break;
 
 			case PlatformInput.ActionType.Up: {
-				if (!isDown) { return PlatformInput.ActionType.None; }
 				if (!isDrag)
 				{
 					if (HasPassedDragThreshold(position))
@@ -49,7 +65,6 @@ public class InputTracker
 			} break;
 
 			case PlatformInput.ActionType.Hold: {
-				if (!isDown) { return PlatformInput.ActionType.None; }
 				if (!isDrag && HasPassedDragThreshold(position))
 				{
 					_drag = ConstructState(position);
@@ -58,6 +73,7 @@ public class InputTracker
 			} break;
 		}
 
+		// pass as is
 		return confirm;
 	}
 

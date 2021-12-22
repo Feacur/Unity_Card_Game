@@ -18,10 +18,10 @@ public class InputController : MonoBehaviour
 	[System.Serializable]
 	private struct State
 	{
-		public IHoverable hoverable;
-		public IDragSource dragSource;
-		public IDraggable draggable;
-		public PlatformInput.ActionType pickAction;
+		public IHoverable hovered;
+		public IDragSource pickedFrom;
+		public IDraggable picked;
+		public bool readyToDrop;
 	};
 	private State _state;
 
@@ -29,46 +29,33 @@ public class InputController : MonoBehaviour
 	{
 		IHoverable currentHoverable = hovered?.GetComponent<IHoverable>();
 
-		if (_state.hoverable != null)
+		if (_state.hovered != null)
 		{
-			if (ReferenceEquals(currentHoverable, _state.hoverable))
+			if (ReferenceEquals(currentHoverable, _state.hovered))
 			{
-				_state.hoverable.OnUpdate(_state.draggable, input);
+				_state.hovered.OnUpdate(_state.picked, input);
 				return;
 			}
 
-			_state.hoverable.OnExit(_state.draggable, input);
-			_state.hoverable = null;
+			_state.hovered.OnExit(_state.picked, input);
+			_state.hovered = null;
 		}
 
 		if (currentHoverable != null)
 		{
-			_state.hoverable = currentHoverable;
-			currentHoverable.OnEnter(_state.draggable, input);
+			_state.hovered = currentHoverable;
+			currentHoverable.OnEnter(_state.picked, input);
 		}
 	}
 
-	private void UpdateKeep(GameObject hovered, GameInputData input)
+	private void UpdatePrepare(GameObject hovered, GameInputData input)
 	{
-		if (!hovered) { return; }
+		// stop hovering the picked object
+		_state.hovered?.OnExit(_state.picked, input);
+		_state.hovered = null;
 
-		_state.dragSource = hovered.GetComponent<IDragSource>();
-		_state.draggable = _state.dragSource?.OnPick(input);
-	}
-
-	private void UpdatePick(GameObject hovered, GameInputData input)
-	{
-		if (_state.draggable == null) { return; }
-
-		_state.hoverable?.OnExit(_state.draggable, input);
-		_state.hoverable = null;
-
-		_state.draggable?.OnPick(input);
-	}
-
-	private void UpdateDrag(GameObject hovered, GameInputData input)
-	{
-		_state.draggable?.OnUpdate(input);
+		_state.picked?.OnPick(input);
+		_state.readyToDrop = true;
 	}
 
 	private void UpdateDrop(GameObject hovered, GameInputData input)
@@ -76,18 +63,18 @@ public class InputController : MonoBehaviour
 		State state = this._state;
 		this._state = default;
 
-		state.hoverable?.OnExit(state.draggable, input);
-		state.hoverable = null;
+		state.hovered?.OnExit(state.picked, input);
+		state.hovered = null;
 
 		bool dropResult = false;
 		if (hovered)
 		{
 			IDragTarget dragTarget = hovered.GetComponent<IDragTarget>();
-			dropResult = dragTarget?.OnDrop(state.draggable, input) ?? false;
+			dropResult = dragTarget?.OnDrop(state.picked, input) ?? false;
 		}
 
-		state.draggable?.OnDrop(input);
-		state.dragSource?.OnDrop(input, dropResult);
+		state.picked?.OnDrop(input);
+		state.pickedFrom?.OnDrop(input, dropResult);
 	}
 
 	// ----- ----- ----- ----- -----
@@ -103,73 +90,81 @@ public class InputController : MonoBehaviour
 
 	private void Update()
 	{
+		// read and interpret input
 		Vector3 position = PlatformInput.GetPrimaryPosition();
-		PlatformInput.ActionType actionType = _inputTracker.Do(
-			position, PlatformInput.GetAction(0), PlatformInput.GetAction(1)
+		PlatformInput.ActionType trackedAction = _inputTracker.Do(
+			position, PlatformInput.GetAction(0)
 		);
 
+			if (_state.picked != null && PlatformInput.GetAction(1) == PlatformInput.ActionType.Up)
+			{
+				trackedAction = PlatformInput.ActionType.Cancel;
+			}
+
+		// construct input data, always target the ground
 		Ray worldRay = _camera.ScreenPointToRay(position);
 		Physics.Raycast(worldRay, out RaycastHit worldHit);
+		GameObject hovered = worldHit.transform?.gameObject;
 
 		float distance = Vector3.Magnitude(_camera.transform.position) / Vector3.Dot(worldRay.direction, Vector3.down);
 		GameInputData input = new GameInputData {
 			origin = _camera.transform.position,
 			direction = worldRay.direction,
-			target = _camera.transform.position + worldRay.direction * distance,
+			// _camera.transform.position + worldRay.direction * distance,
+			target = new Vector3(
+				_camera.transform.position.x + worldRay.direction.x * distance,
+				0,
+				_camera.transform.position.z + worldRay.direction.z * distance
+			),
 		};
 
-		GameObject hovered = worldHit.transform?.gameObject;
-
-		if (_state.pickAction == PlatformInput.ActionType.None)
+		// process drag and drop
+		if (_state.picked == null)
 		{
-			switch (actionType)
+			if (hovered && trackedAction == PlatformInput.ActionType.Down)
 			{
-				case PlatformInput.ActionType.None:
-				case PlatformInput.ActionType.Hold:
-					if (_state.draggable == null)
-					{
-						UpdateHover(hovered, input);
-					}
-					break;
-
-				case PlatformInput.ActionType.Down:
-					UpdateKeep(hovered, input);
-					break;
-
-				case PlatformInput.ActionType.Up:
-					UpdateDrop(null, input);
-					break;
-
-				case PlatformInput.ActionType.Tap:
-				case PlatformInput.ActionType.Drag:
-					_state.pickAction = actionType;
-					UpdatePick(hovered, input);
-					break;
-
-				default:
-					break;
+				_state.pickedFrom = hovered.GetComponent<IDragSource>();
+				_state.picked = _state.pickedFrom?.OnPick(input);
 			}
 		}
 		else
 		{
-			UpdateDrag(hovered, input);
-			switch (actionType)
+			if (!_state.readyToDrop)
 			{
-				case PlatformInput.ActionType.None:
-				case PlatformInput.ActionType.Hold:
-					UpdateHover(hovered, input);
-					break;
-
-				case PlatformInput.ActionType.Tap:
-				case PlatformInput.ActionType.Up:
-					UpdateDrop(hovered, input);
-					break;
-
-				case PlatformInput.ActionType.Cancel:
-				case PlatformInput.ActionType.Error:
-					UpdateDrop(null, input);
-				break;
+				switch (trackedAction)
+				{
+					case PlatformInput.ActionType.Tap:
+					case PlatformInput.ActionType.Drag:
+						UpdatePrepare(hovered, input);
+						break;
+				}
 			}
+			else
+			{
+				_state.picked?.OnUpdate(input);
+				switch (trackedAction)
+				{
+					case PlatformInput.ActionType.Tap:
+					case PlatformInput.ActionType.Up:
+						UpdateDrop(hovered, input);
+						break;
+				}
+			}
+		}
+
+		// process errors
+		switch (trackedAction)
+		{
+			case PlatformInput.ActionType.Cancel:
+			case PlatformInput.ActionType.Error:
+				UpdateDrop(null, input);
+				break;
+		}
+
+		// process hover
+		if (_state.picked == null || _state.readyToDrop)
+		{
+			UpdateHover(hovered, input);
 		}
 	}
 }
