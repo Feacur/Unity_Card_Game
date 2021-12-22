@@ -9,7 +9,6 @@ public class Fitter : MonoBehaviour
 	[SerializeField] private Fittable _elementPrefab;
 	[SerializeField] private Transform _activeRoot;
 	[SerializeField] private Transform _pooledRoot;
-	[SerializeField] private float _animationDuration = 0.25f;
 
 	public Vector3 rotation;
 	[Range(0, 2)] public float _separationFraction = 1;
@@ -148,19 +147,14 @@ public class Fitter : MonoBehaviour
 		_animation.RemoveAll(it => it.transform == fittableTransform);
 	}
 
-	public void Animate()
+	public void Animate(float duration)
 	{
 		if (_animationCoroutine != null)
 		{
 			StopCoroutine(_animationCoroutine);
 		}
-		_animationCoroutine = StartCoroutine(AnimationCoroutine());
-	}
-	
-	private IEnumerator AnimationCoroutine()
-	{
-		yield return null;
 
+		//
 		int initialCount = GetActiveCount();
 		CalculateMetrics(initialCount, out float separation, out float offset);
 
@@ -176,19 +170,27 @@ public class Fitter : MonoBehaviour
 			_animation.Add((childTransform, from, to));
 		}
 
+		//
+		_animationCoroutine = StartCoroutine(AnimationCoroutine(duration));
+	}
+	
+	private IEnumerator AnimationCoroutine(float duration)
+	{
+		yield return null;
+
 		for (int i = 0; i < _animation.Count; i++)
 		{
 			Transform childTransform = _animation[i].transform;
 			childTransform.localRotation = Quaternion.Euler(rotation);
 		}
 
-		for (float time = 0; time < _animationDuration; time += Time.deltaTime)
+		for (float time = 0; time < duration; time += Time.deltaTime)
 		{
 			foreach (var (childTransform, from, to) in _animation)
 			{
 				childTransform.localPosition = Vector3.LerpUnclamped(
 					from, to,
-					Easing.SmoothStep(Mathf.Min(time / _animationDuration, 1))
+					Easing.SmoothStep(Mathf.Min(time / duration, 1))
 				);
 			}
 			yield return null;
@@ -198,8 +200,9 @@ public class Fitter : MonoBehaviour
 		{
 			childTransform.localPosition = to;
 		}
-		_animation.Clear();
 
+		//
+		_animation.Clear();
 		_animationCoroutine = null;
 	}
 }

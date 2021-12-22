@@ -22,7 +22,7 @@ public class FitterDebug : FitterController
 			{
 				_fitter.Remove(i - 1);
 			}
-			_fitter.Animate();
+			Animate();
 		}
 		else if (currentCount < targetCount)
 		{
@@ -30,7 +30,7 @@ public class FitterDebug : FitterController
 			{
 				_fitter.Add();
 			}
-			_fitter.Animate();
+			Animate();
 		}
 	}
 

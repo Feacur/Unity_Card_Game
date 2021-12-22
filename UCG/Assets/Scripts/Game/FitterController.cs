@@ -6,6 +6,7 @@ public abstract class FitterController : MonoBehaviour
 	, IDragSource
 {
 	protected const int CountLimit = 10;
+	protected const float AnimationDuration = 0.25f;
 
 	[SerializeField, Range(0, CountLimit)] protected int _targetLimit;
 	[SerializeField] private bool _isDragSource;
@@ -21,6 +22,8 @@ public abstract class FitterController : MonoBehaviour
 	// ----- ----- ----- ----- -----
 
 	protected bool HaveSpace(int count) => _targetLimit == 0 || count < _targetLimit;
+
+	protected void Animate() => _fitter.Animate(duration: AnimationDuration);
 
 	// ----- ----- ----- ----- -----
 	//     MonoBehaviour
@@ -82,6 +85,6 @@ public abstract class FitterController : MonoBehaviour
 		_pickedFittable = null;
 		_pickedId = 0;
 
-		_fitter.Animate();
+		Animate();
 	}
 }
